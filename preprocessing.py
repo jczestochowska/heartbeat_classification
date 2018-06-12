@@ -14,7 +14,7 @@ def find_wav_length(filepath):
 def find_dataset_longest_wav(data_dir_path):
     the_longest = 0
     for wav_filename in os.listdir(data_dir_path):
-        wav_file_path = os.path.abspath(wav_filename)
+        wav_file_path = os.path.join(data_dir_path, wav_filename)
         new_length = find_wav_length(wav_file_path)
         if new_length > the_longest:
             the_longest = new_length
