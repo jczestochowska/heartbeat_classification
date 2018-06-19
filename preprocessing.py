@@ -3,6 +3,7 @@ import wave
 from copy import deepcopy
 
 import numpy as np
+from scipy.signal import decimate
 
 LONGEST_AUDIO_LENGTH = 396900
 
@@ -38,4 +39,10 @@ def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
             repetition_number -= 1
         if repetition_modulo:
             signal = np.hstack((signal, signal[:repetition_modulo]))
+    return signal
+
+
+def decimating(signal, decimate_count, sampling_factor=8):
+    for _ in range(decimate_count):
+        signal = decimate(signal, sampling_factor, axis=0, zero_phase=True)
     return signal

@@ -1,7 +1,8 @@
 import numpy as np
 from unittest import TestCase
 
-from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file
+from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
+    decimating
 
 TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'
 TEST_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/set_a/artifact__201012172012.wav'
@@ -33,3 +34,10 @@ class TestPreprocessing(TestCase):
         actual = len(get_raw_signal_from_file(TEST_FILEPATH1))
         expected = 45233
         self.assertEqual(actual, expected)
+
+    def test_decimating(self):
+        signal = [0] * 1024
+        signal = np.array(signal)
+        actual = len(decimating(signal, 2))
+        expected = 16
+        self.assertEqual(expected, actual)
