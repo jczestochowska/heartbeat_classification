@@ -2,11 +2,13 @@ import numpy as np
 from unittest import TestCase
 
 from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
-    decimating
+    downsample_and_filter, create_sample
 
 TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'
 TEST_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/set_a/artifact__201012172012.wav'
 TEST_FILEPATH1 = '/home/jczestochowska/workspace/heartbeat_classification/data/set_b/extrastole__151_1306779785624_B.wav'
+TEST_FILEPATH2 = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir/extrastole_128_1306344005749_A.wav'
+TEST_LABELS_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir/test_labels'
 
 
 class TestPreprocessing(TestCase):
@@ -38,11 +40,17 @@ class TestPreprocessing(TestCase):
     def test_decimating(self):
         signal = [0] * 1024
         signal = np.array(signal)
-        actual = len(decimating(signal, 2))
+        actual = len(downsample_and_filter(signal, 2))
         expected = 16
         self.assertEqual(expected, actual)
 
     def test_decimating_exception(self):
         signal = [0] * 22
-        decimating(signal, 1)
+        downsample_and_filter(signal, 1)
         self.assertRaises(ValueError)
+
+    def test_create_sample(self):
+        signal = np.array([1, 2, 3])
+        actual = create_sample(signal, TEST_FILEPATH2, TEST_LABELS_FILEPATH)
+        expected = np.array([1, 2, 3, 'extrastole'], dtype=object)
+        np.testing.assert_array_equal(expected, actual)

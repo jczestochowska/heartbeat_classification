@@ -4,9 +4,11 @@ import wave
 from copy import deepcopy
 
 import numpy as np
+import pandas as pd
 from scipy.signal import decimate
 
 LONGEST_AUDIO_LENGTH = 396900
+LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets')
 
 
 def find_dataset_longest_wav(data_dir_path):
@@ -43,10 +45,37 @@ def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
     return signal
 
 
-def decimating(signal, decimate_count, sampling_factor=8):
+def downsample_and_filter(signal, decimate_count=3, sampling_factor=8):
     try:
         for _ in range(decimate_count):
             signal = decimate(signal, sampling_factor, axis=0, zero_phase=True)
     except ValueError:
         logging.warning("signal is too short, cannot downsample with this sampling factor")
     return signal
+
+
+def prepare_labels_csv(new_filename='labels_merged_sets_processed.csv', labels_filename=LABELS_FILEPATH):
+    labels_df = pd.read_csv(labels_filename)
+    for index, row in labels_df.iterrows():
+        row['fname'] = row['fname'][6:]
+        if row['fname'].startswith('Btraining'):
+            splitted = row['fname'].split('_')
+            if len(splitted) > 5:
+                splitted = [splitted[1], splitted[3], splitted[4], splitted[5], splitted[6]]
+                row['fname'] = '_'.join(splitted)
+            else:
+                row['fname'] = row['fname'][10:]
+    labels_df.drop('dataset', axis=1, inplace=True)
+    saving_path = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', new_filename)
+    labels_df.to_csv(saving_path, index=False)
+
+
+def create_sample(signal, signal_filepath, labels_filepath=LABELS_FILEPATH):
+    signal_filename = os.path.basename(signal_filepath)
+    labels_df = pd.read_csv(labels_filepath)
+    label = labels_df.loc[labels_df['fname'] == signal_filename]['label']
+    return np.append(signal, label)
+
+
+if __name__ == '__main__':
+    prepare_labels_csv()
