@@ -1,3 +1,4 @@
+import logging
 import os
 import wave
 from copy import deepcopy
@@ -43,6 +44,9 @@ def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
 
 
 def decimating(signal, decimate_count, sampling_factor=8):
-    for _ in range(decimate_count):
-        signal = decimate(signal, sampling_factor, axis=0, zero_phase=True)
+    try:
+        for _ in range(decimate_count):
+            signal = decimate(signal, sampling_factor, axis=0, zero_phase=True)
+    except ValueError:
+        logging.warning("signal is too short, cannot downsample with this sampling factor")
     return signal

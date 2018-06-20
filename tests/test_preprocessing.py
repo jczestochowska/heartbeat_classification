@@ -41,3 +41,8 @@ class TestPreprocessing(TestCase):
         actual = len(decimating(signal, 2))
         expected = 16
         self.assertEqual(expected, actual)
+
+    def test_decimating_exception(self):
+        signal = [0] * 22
+        decimating(signal, 1)
+        self.assertRaises(ValueError)
