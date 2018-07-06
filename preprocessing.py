@@ -9,7 +9,7 @@ from scipy.io import wavfile
 from scipy.signal import decimate, dlti, butter
 
 LONGEST_AUDIO_LENGTH = 396900
-LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets_processed.csv')
+LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets_no_dataset_column.csv')
 
 
 def find_dataset_longest_wav(data_dir_path):
@@ -54,7 +54,7 @@ def downsample_and_filter(signal, decimate_count=1, sampling_factor=4):
     return signal
 
 
-def prepare_labels_csv(new_filename='labels_merged_sets_processed.csv', labels_filename=LABELS_FILEPATH):
+def prepare_labels_csv(new_filename='labels_merged_sets_no_dataset_column.csv', labels_filename=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filename)
     for index, row in labels_df.iterrows():
         row['fname'] = row['fname'][6:]

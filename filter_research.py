@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 
 from preprocessing import get_raw_signal_from_file, repeat_signal_length, downsample_and_filter
 
-LABELS_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/labels_merged_sets_processed.csv'
+LABELS_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/labels_merged_sets_no_dataset_column.csv'
 TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'
 TEST_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/set_a/artifact__201012172012.wav'
 TEST_FILEPATH1 = '/home/jczestochowska/workspace/heartbeat_classification/data/set_b/extrastole__151_1306779785624_B.wav'
