@@ -3,7 +3,7 @@ from unittest import TestCase
 import numpy as np
 
 from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
-    decimate_, create_dataset
+    decimate_, create_dataset, prepare_signal_from_file
 
 TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'
 TEST_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/set_a/artifact__201012172012.wav'
@@ -49,3 +49,12 @@ class TestPreprocessing(TestCase):
         signal = [0] * 22
         decimate_(signal, sampling_factor=1)
         self.assertRaises(ValueError)
+
+    def test_prepare_signal_from_file(self):
+        actual = prepare_signal_from_file(TEST_FILEPATH)
+        # self.assertEqual(776, len(actual))
+        self.assertTrue(list(map(assertIsInt, actual)))
+
+
+def assertIsInt(number):
+    return isinstance(number, int)

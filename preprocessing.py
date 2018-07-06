@@ -82,11 +82,6 @@ def prepare_labels_csv(new_filename="labels_merged_sets_no_dataset_column.csv", 
     labels_df.to_csv(saving_path, index=False)
 
 
-def get_label(signal_filename, labels_df):
-    label_series = labels_df.loc[labels_df['fname'] == signal_filename]['label']
-    return label_series.values[0]
-
-
 def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filepath)
     columns = ['signal', 'label']
@@ -94,13 +89,24 @@ def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
         csv_writer = csv.writer(dataset_file, delimiter=',')
         csv_writer.writerow(columns)
         for signal_filename in os.listdir(data_dir_path):
-            signal = get_raw_signal_from_file(os.path.join(data_dir_path, signal_filename))
-            signal = repeat_signal_length(signal)
-            signal = decimate_(signal)
-            signal = list(map(int, signal))
+            signal_filepath = os.path.join(data_dir_path, signal_filename)
+            signal = prepare_signal_from_file(signal_filepath)
             label = get_label(signal_filename, labels_df)
             signal.append(label)
             csv_writer.writerow(signal)
+
+
+def prepare_signal_from_file(signal_filepath):
+    signal = get_raw_signal_from_file(signal_filepath)
+    signal = repeat_signal_length(signal)
+    signal = decimate_(signal)
+    signal = list(map(int, signal))
+    return signal
+
+
+def get_label(signal_filename, labels_df):
+    label_series = labels_df.loc[labels_df['fname'] == signal_filename]['label']
+    return label_series.values[0]
 
 
 class UnknownFilterException(Exception):
