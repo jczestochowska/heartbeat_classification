@@ -1,14 +1,15 @@
+import csv
 import logging
 import os
-import wave
 from copy import deepcopy
 
 import numpy as np
 import pandas as pd
-from scipy.signal import decimate
+from scipy.io import wavfile
+from scipy.signal import decimate, dlti, butter
 
 LONGEST_AUDIO_LENGTH = 396900
-LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets')
+LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets_processed.csv')
 
 
 def find_dataset_longest_wav(data_dir_path):
@@ -26,9 +27,7 @@ def find_wav_length(wav_filepath):
 
 
 def get_raw_signal_from_file(wav_filepath):
-    raw_signal = wave.open(wav_filepath, 'rb')
-    initial_signal = raw_signal.readframes(-1)
-    return np.frombuffer(initial_signal, 'int16')
+    return wavfile.read(wav_filepath)[1]
 
 
 def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
@@ -45,10 +44,11 @@ def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
     return signal
 
 
-def downsample_and_filter(signal, decimate_count=3, sampling_factor=8):
+def downsample_and_filter(signal, decimate_count=1, sampling_factor=4):
     try:
         for _ in range(decimate_count):
-            signal = decimate(signal, sampling_factor, axis=0, zero_phase=True)
+            signal = decimate(signal, sampling_factor,
+                              ftype=dlti(*butter(8, 0.8 / sampling_factor)), axis=0, zero_phase=True)
     except ValueError:
         logging.warning("signal is too short, cannot downsample with this sampling factor")
     return signal
@@ -70,11 +70,25 @@ def prepare_labels_csv(new_filename='labels_merged_sets_processed.csv', labels_f
     labels_df.to_csv(saving_path, index=False)
 
 
-def create_sample(signal, signal_filepath, labels_filepath=LABELS_FILEPATH):
-    signal_filename = os.path.basename(signal_filepath)
+def get_label(signal_filename, labels_df):
+    label_series = labels_df.loc[labels_df['fname'] == signal_filename]['label']
+    return label_series.values[0]
+
+
+def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filepath)
-    label = labels_df.loc[labels_df['fname'] == signal_filename]['label']
-    return np.append(signal, label)
+    columns = ['signal', 'label']
+    with open('dataset.csv', 'w') as dataset_file:
+        csv_writer = csv.writer(dataset_file, delimiter=',')
+        csv_writer.writerow(columns)
+        for signal_filename in os.listdir(data_dir_path):
+            signal = get_raw_signal_from_file(os.path.join(data_dir_path, signal_filename))
+            signal = repeat_signal_length(signal)
+            signal = downsample_and_filter(signal)
+            signal = list(map(int, signal))
+            label = get_label(signal_filename, labels_df)
+            signal.append(label)
+            csv_writer.writerow(signal)
 
 
 if __name__ == '__main__':
