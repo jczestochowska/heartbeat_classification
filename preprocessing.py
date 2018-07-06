@@ -6,10 +6,12 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 from scipy.io import wavfile
-from scipy.signal import decimate, dlti, butter
+from scipy.signal import decimate, dlti, butter, cheby1
 
 LONGEST_AUDIO_LENGTH = 396900
-LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0], 'data', 'labels_merged_sets_no_dataset_column.csv')
+LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
+                               'data',
+                               'labels_merged_sets_no_dataset_column.csv')
 
 
 def find_dataset_longest_wav(data_dir_path):
@@ -44,17 +46,27 @@ def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):
     return signal
 
 
-def downsample_and_filter(signal, decimate_count=1, sampling_factor=4):
+def resolve_filter(filter_type, sampling_factor):
+    if filter_type == "butterworth":
+        return dlti(*butter(8, 0.8 / sampling_factor))
+    elif filter_type == "chebyshev":
+        return dlti(*cheby1(8, 0.05, 0.8 / sampling_factor))
+    raise UnknownFilterException()
+
+
+def decimate_(signal, filter_type="butterworth", decimate_count=1, sampling_factor=4):
+    filter_ = resolve_filter(filter_type, sampling_factor)
     try:
         for _ in range(decimate_count):
-            signal = decimate(signal, sampling_factor,
-                              ftype=dlti(*butter(8, 0.8 / sampling_factor)), axis=0, zero_phase=True)
+            signal = decimate(signal, sampling_factor, ftype=filter_, axis=0, zero_phase=True)
     except ValueError:
         logging.warning("signal is too short, cannot downsample with this sampling factor")
+    except UnknownFilterException():
+        logging.warning("chosen filter cannot be resolved, supported are chebyshev or butterworth")
     return signal
 
 
-def prepare_labels_csv(new_filename='labels_merged_sets_no_dataset_column.csv', labels_filename=LABELS_FILEPATH):
+def prepare_labels_csv(new_filename="labels_merged_sets_no_dataset_column.csv", labels_filename=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filename)
     for index, row in labels_df.iterrows():
         row['fname'] = row['fname'][6:]
@@ -84,12 +96,12 @@ def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
         for signal_filename in os.listdir(data_dir_path):
             signal = get_raw_signal_from_file(os.path.join(data_dir_path, signal_filename))
             signal = repeat_signal_length(signal)
-            signal = downsample_and_filter(signal)
+            signal = decimate_(signal)
             signal = list(map(int, signal))
             label = get_label(signal_filename, labels_df)
             signal.append(label)
             csv_writer.writerow(signal)
 
 
-if __name__ == '__main__':
-    prepare_labels_csv()
+class UnknownFilterException(Exception):
+    pass
