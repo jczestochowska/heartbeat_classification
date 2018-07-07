@@ -99,7 +99,7 @@ def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
 def prepare_signal_from_file(signal_filepath):
     signal = get_raw_signal_from_file(signal_filepath)
     signal = repeat_signal_length(signal)
-    signal = decimate_(signal)
+    signal = decimate_(signal, decimate_count=3, sampling_factor=8)
     signal = list(map(int, signal))
     return signal
 

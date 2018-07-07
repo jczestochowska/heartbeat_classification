@@ -1,15 +1,18 @@
+import numpy as np
+import os
 from unittest import TestCase
 
-import numpy as np
-
+from config import PROJECT_ROOT_DIR
 from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
-    decimate_, create_dataset, prepare_signal_from_file
+    decimate_, prepare_signal_from_file, create_dataset
 
-TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'
-TEST_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/set_a/artifact__201012172012.wav'
-TEST_FILEPATH1 = '/home/jczestochowska/workspace/heartbeat_classification/data/set_b/extrastole__151_1306779785624_B.wav'
-TEST_FILEPATH2 = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir/extrastole_128_1306344005749_A.wav'
-TEST_LABELS_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_labels'
+TEST_DIR_PATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_preprocessing_dir')
+TEST_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'data/set_a/artifact__201012172012.wav')
+TEST_FILEPATH1 = os.path.join(PROJECT_ROOT_DIR,
+                              'data/set_b/extrastole__151_1306779785624_B.wav')
+TEST_FILEPATH2 = os.path.join(PROJECT_ROOT_DIR,
+                              'tests/test_preprocessing_dir/extrastole_128_1306344005749_A.wav')
+TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_labels')
 
 
 class TestPreprocessing(TestCase):
@@ -52,9 +55,5 @@ class TestPreprocessing(TestCase):
 
     def test_prepare_signal_from_file(self):
         actual = prepare_signal_from_file(TEST_FILEPATH)
-        # self.assertEqual(776, len(actual))
-        self.assertTrue(list(map(assertIsInt, actual)))
-
-
-def assertIsInt(number):
-    return isinstance(number, int)
+        self.assertEqual(776, len(actual))
+        self.assertTrue(all(isinstance(number, int) for number in actual))
