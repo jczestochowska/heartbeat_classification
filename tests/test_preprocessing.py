@@ -3,8 +3,8 @@ import os
 from unittest import TestCase
 
 from config import PROJECT_ROOT_DIR
-from preprocessing import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
-    decimate_, prepare_signal_from_file, create_dataset
+from signal_utils import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
+    decimate_, prepare_signal_from_file
 
 TEST_DIR_PATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_preprocessing_dir')
 TEST_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'data/set_a/artifact__201012172012.wav')
