@@ -41,4 +41,5 @@ def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
 
 def get_label(signal_filename, labels_df):
     label_series = labels_df.loc[labels_df['fname'] == signal_filename]['label']
+    label_values = label_series.values
     return label_series.values[0]
