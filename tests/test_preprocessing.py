@@ -58,6 +58,3 @@ class TestPreprocessing(TestCase):
         actual = prepare_signal_from_file(TEST_FILEPATH)
         self.assertEqual(776, len(actual))
         self.assertTrue(all(isinstance(number, int) for number in actual))
-
-    def test_create_dataset(self):
-        create_dataset(data_dir_path=TEST_DIR_PATH, labels_filepath=TEST_LABELS_FILEPATH)
