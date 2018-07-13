@@ -1,5 +1,7 @@
 import csv
+import logging
 import os
+
 import pandas as pd
 
 from signal_utils import prepare_signal_from_file
@@ -7,6 +9,10 @@ from signal_utils import prepare_signal_from_file
 LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
                                'data',
                                'labels_merged_sets_no_dataset_column.csv')
+LABELS_MAPPING = {'murmur': 1, 'extrastole': 2, 'normal': 3, 'artifact': 4, 'extrahls': 2}
+
+LOGGER = logging.getLogger(__name__)
+LOGGER.setLevel(logging.INFO)
 
 
 def prepare_labels_csv(new_filename="labels_merged_sets_no_dataset_column.csv", labels_filename=LABELS_FILEPATH):
@@ -25,21 +31,23 @@ def prepare_labels_csv(new_filename="labels_merged_sets_no_dataset_column.csv", 
     labels_df.to_csv(saving_path, index=False)
 
 
-def create_dataset(data_dir_path, labels_filepath=LABELS_FILEPATH):
+def create_dataset(data_dir_path, dataset_filename="dataset.csv", labels_filepath=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filepath)
     columns = ['signal', 'label']
-    with open('dataset.csv', 'w') as dataset_file:
+    with open(dataset_filename, 'w') as dataset_file:
         csv_writer = csv.writer(dataset_file, delimiter=',')
         csv_writer.writerow(columns)
-        for signal_filename in os.listdir(data_dir_path):
-            signal_filepath = os.path.join(data_dir_path, signal_filename)
-            signal = prepare_signal_from_file(signal_filepath)
-            label = get_label(signal_filename, labels_df)
-            signal.append(label)
-            csv_writer.writerow(signal)
+        try:
+            for signal_filename in os.listdir(data_dir_path):
+                signal_filepath = os.path.join(data_dir_path, signal_filename)
+                signal = prepare_signal_from_file(signal_filepath)
+                label = get_label(signal_filename, labels_df)
+                signal.append(label)
+                csv_writer.writerow(signal)
+                LOGGER.warning("File was added: {0}".format(signal_filename))
+        except IndexError:
+            LOGGER.warning("No label found for file: {0}".format(signal_filename))
 
 
 def get_label(signal_filename, labels_df):
-    label_series = labels_df.loc[labels_df['fname'] == signal_filename]['label']
-    label_values = label_series.values
-    return label_series.values[0]
+    return LABELS_MAPPING.get(labels_df.loc[labels_df['fname'] == signal_filename]['label'].values[0])
