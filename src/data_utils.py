@@ -1,10 +1,10 @@
 import csv
 import logging
 import os
-
 import pandas as pd
 
-from signal_utils import prepare_signal_from_file
+from config import PROJECT_ROOT_DIR
+from src.signal_utils import prepare_signal_from_file
 
 LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
                                'data',
@@ -34,7 +34,8 @@ def prepare_labels_csv(new_filename="labels_merged_sets_no_dataset_column.csv", 
 def create_dataset(data_dir_path, dataset_filename="dataset.csv", labels_filepath=LABELS_FILEPATH):
     labels_df = pd.read_csv(labels_filepath)
     columns = ['signal', 'label']
-    with open(dataset_filename, 'w') as dataset_file:
+    dataset_path = os.path.join(PROJECT_ROOT_DIR, "data/processed", dataset_filename)
+    with open(dataset_path, 'w') as dataset_file:
         csv_writer = csv.writer(dataset_file, delimiter=',')
         csv_writer.writerow(columns)
         try:

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-from signal_utils import get_raw_signal_from_file, repeat_signal_length, downsample_and_filter
+from src.signal_utils import get_raw_signal_from_file, repeat_signal_length, downsample_and_filter
 
 LABELS_FILEPATH = '/home/jczestochowska/workspace/heartbeat_classification/data/labels_merged_sets_no_dataset_column.csv'
 TEST_DIR_PATH = '/home/jczestochowska/workspace/heartbeat_classification/tests/test_preprocessing_dir'

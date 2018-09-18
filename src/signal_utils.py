@@ -1,8 +1,7 @@
 import logging
+import numpy as np
 import os
 from copy import deepcopy
-
-import numpy as np
 from scipy.io import wavfile
 from scipy.signal import decimate, dlti, butter, cheby1
 

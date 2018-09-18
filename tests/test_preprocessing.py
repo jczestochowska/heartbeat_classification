@@ -3,17 +3,16 @@ import os
 from unittest import TestCase
 
 from config import PROJECT_ROOT_DIR
-from data_utils import create_dataset
-from signal_utils import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
+from src.signal_utils import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
     decimate_, prepare_signal_from_file
 
 TEST_DIR_PATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_preprocessing_dir')
-TEST_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'data/set_a/artifact__201012172012.wav')
+TEST_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'data/raw/set_a/artifact__201012172012.wav')
 TEST_FILEPATH1 = os.path.join(PROJECT_ROOT_DIR,
-                              'data/set_b/extrastole__151_1306779785624_B.wav')
+                              'data/raw/set_b/extrastole__151_1306779785624_B.wav')
 TEST_FILEPATH2 = os.path.join(PROJECT_ROOT_DIR,
                               'tests/test_preprocessing_dir/extrastole_128_1306344005749_A.wav')
-TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_labels')
+TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests/test_preprocessing_dir/test_labels')
 
 
 class TestPreprocessing(TestCase):
