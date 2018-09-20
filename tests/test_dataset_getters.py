@@ -2,27 +2,27 @@ from operator import methodcaller
 from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
-    get_physionet_labels, get_physionet_label, map_label_to_number, map_label_to_string
+    get_physionet_labels, get_physionet_label, map_label_to_number, map_label_to_string, get_kaggle_label
 from tests.test_preprocessing import TEST_DIR_PATH
 
 
 class TestDatasetGetters(TestCase):
-    def test_get_random_filenames_by_label(self):
+    def test_get_random_kaggle_filenames_by_label(self):
         actual = get_random_kaggle_filenames_by_label(how_many=2, directory=TEST_DIR_PATH, label='artifact')
         expected = 2
         self.assertEqual(expected, len(actual))
 
-    def test_get_random_filenames_by_label_noisy(self):
+    def test_get_random_kaggle_filenames_by_label_noisy(self):
         actual = get_random_kaggle_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='murmur')
         expected = 3
         self.assertEqual(expected, len(actual))
 
-    def test_get_random_filenames_by_label_normal(self):
+    def test_get_random_kaggle_filenames_by_label_normal(self):
         actual = get_random_kaggle_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='normal')
         expected = 3
         self.assertEqual(expected, len(actual))
 
-    def test_get_random_filenames_by_label_extrastole(self):
+    def test_get_random_kaggle_filenames_by_label_extrastole(self):
         actual = get_random_kaggle_filenames_by_label(how_many=2, directory=TEST_DIR_PATH, label='extrastole')
         expected = 2
         self.assertEqual(expected, len(actual))
@@ -68,6 +68,16 @@ class TestDatasetGetters(TestCase):
         expected = -1
         audio_filename = get_random_physionet_filenames_by_label(how_many=1, label=expected, set_letter='a')[0]
         actual = get_physionet_label(audio_filename, labels)
+        self.assertEqual(expected, actual)
+
+    def test_get_kaggle_label_from_filename_murmur(self):
+        actual = get_kaggle_label(audio_filename="murmur_01110.wav")
+        expected = 'murmur'
+        self.assertEqual(expected, actual)
+
+    def test_get_kaggle_label_from_filename_wrong_filename(self):
+        actual = get_kaggle_label(audio_filename="nosuchlabel_01110.wav")
+        expected = 'nosuchlabel'
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_normal(self):
