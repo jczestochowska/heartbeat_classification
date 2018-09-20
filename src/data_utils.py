@@ -1,4 +1,5 @@
 import csv
+import glob
 import logging
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,8 +37,15 @@ def get_audio_dir_path(path, set_letter):
 
 
 def get_random_filenames(how_many, directory):
-    files = os.listdir(directory)
-    return random.choices(population=files, k=how_many)
+    filenames = os.listdir(directory)
+    return random.choices(population=filenames, k=how_many)
+
+
+def get_random_filenames_by_label(how_many, directory, label):
+    file_to_find_regex = os.path.join(directory, label)
+    file_to_find_regex += '*'
+    filenames_filtered_by_label = glob.glob(file_to_find_regex)
+    return random.choices(population=filenames_filtered_by_label, k=how_many)
 
 
 def get_set_name(letter):

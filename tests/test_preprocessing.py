@@ -3,6 +3,7 @@ import os
 from unittest import TestCase
 
 from config import PROJECT_ROOT_DIR
+from src.data_utils import get_random_filenames_by_label
 from src.signal_utils import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
     decimate_, prepare_signal_from_file
 
@@ -23,7 +24,7 @@ class TestPreprocessing(TestCase):
 
     def test_find_wav_length_for_dir(self):
         actual = find_dataset_longest_wav(TEST_DIR_PATH)
-        expected = 96640
+        expected = 396900
         self.assertEqual(actual, expected)
 
     def test_that_repeat_signal_doesnt_change_length(self):
@@ -57,3 +58,18 @@ class TestPreprocessing(TestCase):
         actual = prepare_signal_from_file(TEST_FILEPATH)
         self.assertEqual(776, len(actual))
         self.assertTrue(all(isinstance(number, int) for number in actual))
+
+    def test_get_random_filenames_by_label(self):
+        actual = get_random_filenames_by_label(how_many=2, directory=TEST_DIR_PATH, label='artifact')
+        expected = 2
+        self.assertEqual(expected, len(actual))
+
+    def test_get_random_filenames_by_label_noisy(self):
+        actual = get_random_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='murmur')
+        expected = 3
+        self.assertEqual(expected, len(actual))
+
+    def test_get_random_filenames_by_label_normal(self):
+        actual = get_random_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='normal')
+        expected = 3
+        self.assertEqual(expected, len(actual))
