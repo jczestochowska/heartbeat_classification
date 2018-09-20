@@ -7,7 +7,7 @@ import os
 import pandas as pd
 import random
 import re
-import wave
+from scipy.io import wavfile
 
 from config import PROJECT_ROOT_DIR
 from src.signal_utils import prepare_signal_from_file
@@ -41,11 +41,12 @@ def get_random_filenames(how_many, directory):
     return random.choices(population=filenames, k=how_many)
 
 
-def get_random_filenames_by_label(how_many, directory, label):
+def get_random_kaggle_filenames_by_label(how_many, directory, label):
     file_to_find_regex = os.path.join(directory, label)
     file_to_find_regex += '*'
-    filenames_filtered_by_label = glob.glob(file_to_find_regex)
-    return random.choices(population=filenames_filtered_by_label, k=how_many)
+    paths_to_files_filtered_by_labels = glob.glob(file_to_find_regex)
+    filenames_filtered_by_labels = list(map(os.path.basename, paths_to_files_filtered_by_labels))
+    return random.choices(population=filenames_filtered_by_labels, k=how_many)
 
 
 def get_set_name(letter):
@@ -53,8 +54,9 @@ def get_set_name(letter):
 
 
 def get_physionet_label(audio_filename, labels_path):
-    labels = pd.read_csv(labels_path)
-    return labels.loc[labels['fname'] == audio_filename]['label'].values[0]
+    audio_filename = os.path.splitext(audio_filename)[0]
+    labels = pd.read_csv(labels_path, header=None, names=['filename', 'label'])
+    return labels.loc[labels['filename'] == audio_filename]['label'].values[0]
 
 
 def get_kaggle_label(audio_filename):
@@ -68,23 +70,18 @@ def map_label(label):
 def plot_kaggle_signal(audio_filename, set_letter, path=KAGGLE_PATH):
     path = os.path.join(get_audio_dir_path(path, set_letter), audio_filename)
     label = get_kaggle_label(audio_filename)
-    audio = wave.open(path, 'rb')
-    plot_wav_file(audio, label)
+    plot_wav_file(path, label)
 
 
 def plot_physionet_signal(audio_filename, set_letter, path=PHYSIONET_PATH):
     path = os.path.join(get_audio_dir_path(path, set_letter), audio_filename)
-    label = get_physionet_label(audio_filename, get_kaggle_labels_path(set_letter))
+    label = get_physionet_label(audio_filename, get_physionet_labels_path())
     label = map_label(label)
-    audio = wave.open(path, 'rb')
-    plot_wav_file(audio, label)
+    plot_wav_file(path, label)
 
 
-def plot_wav_file(audio, label):
-    # Extract Raw Audio from Wav File
-    signal = audio.readframes(-1)
-    signal = np.frombuffer(signal, 'int16')
-    sampling_frequency = audio.getframerate()
+def plot_wav_file(path, label):
+    sampling_frequency, signal = wavfile.read(path)
     number_of_samples = len(signal)
     time = np.linspace(0, number_of_samples / sampling_frequency, num=number_of_samples)
     length_in_seconds = round(number_of_samples / sampling_frequency)
