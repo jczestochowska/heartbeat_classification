@@ -1,3 +1,5 @@
+from itertools import product
+
 import numpy as np
 import os
 from matplotlib import pyplot as plt
@@ -38,6 +40,17 @@ def plot_physionet_signals(how_many, set_letter):
         plot_physionet_signal(filename, labels, path)
 
 
+def plot_physionet_signals_on_square_grid_by_label(set_letter, label, grid_size, figsize):
+    indices = list(product(list(range(grid_size)), repeat=2))
+    f, ax = plt.subplots(grid_size, grid_size, figsize=(figsize, figsize))
+    plt.suptitle(map_label_to_string(label))
+    random_physionet_filenames = get_random_physionet_filenames_by_label(grid_size ** 2, label, set_letter)
+    for grid_indices, filename in list(zip(indices, random_physionet_filenames)):
+        path = os.path.join(get_physionet_audio_dir_path(set_letter), filename)
+        plot_wav_file_on_grid(path, ax, grid_indices)
+    plt.show()
+
+
 def plot_physionet_signals_by_label(how_many, set_letter, label):
     label = map_label_to_number(label)
     audio_dir_path = get_physionet_audio_dir_path(set_letter)
@@ -70,3 +83,10 @@ def plot_wav_file(path, label):
     plt.title(label)
     plt.plot(time, signal)
     plt.show()
+
+
+def plot_wav_file_on_grid(path, grid, grid_coordinates):
+    sampling_frequency, signal = wavfile.read(path)
+    number_of_samples = len(signal)
+    time = np.linspace(0, number_of_samples / sampling_frequency, num=number_of_samples)
+    grid[grid_coordinates[0], grid_coordinates[1]].plot(time, signal)
