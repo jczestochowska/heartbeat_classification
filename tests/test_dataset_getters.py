@@ -3,27 +3,27 @@ from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
     get_physionet_labels, get_physionet_label, map_label_to_number, map_label_to_string, get_kaggle_label
-from tests.test_preprocessing import TEST_DIR_PATH
 
+SET_LETTER = 'a'
 
 class TestDatasetGetters(TestCase):
     def test_get_random_kaggle_filenames_by_label(self):
-        actual = get_random_kaggle_filenames_by_label(how_many=2, directory=TEST_DIR_PATH, label='artifact')
+        actual = get_random_kaggle_filenames_by_label(how_many=2, label='artifact', set_letter=SET_LETTER)
         expected = 2
         self.assertEqual(expected, len(actual))
 
     def test_get_random_kaggle_filenames_by_label_noisy(self):
-        actual = get_random_kaggle_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='murmur')
+        actual = get_random_kaggle_filenames_by_label(how_many=3, label='murmur', set_letter=SET_LETTER)
         expected = 3
         self.assertEqual(expected, len(actual))
 
     def test_get_random_kaggle_filenames_by_label_normal(self):
-        actual = get_random_kaggle_filenames_by_label(how_many=3, directory=TEST_DIR_PATH, label='normal')
+        actual = get_random_kaggle_filenames_by_label(how_many=3, label='normal', set_letter=SET_LETTER)
         expected = 3
         self.assertEqual(expected, len(actual))
 
     def test_get_random_kaggle_filenames_by_label_extrastole(self):
-        actual = get_random_kaggle_filenames_by_label(how_many=2, directory=TEST_DIR_PATH, label='extrastole')
+        actual = get_random_kaggle_filenames_by_label(how_many=2, label='extrastole', set_letter='b')
         expected = 2
         self.assertEqual(expected, len(actual))
 

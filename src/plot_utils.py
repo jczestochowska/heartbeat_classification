@@ -2,6 +2,7 @@ from itertools import product
 
 import numpy as np
 import os
+import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
 
@@ -10,9 +11,31 @@ from src.dataset_getters import get_kaggle_audio_dir_path, get_kaggle_label, get
     map_label_to_string, get_random_kaggle_filenames_by_label, get_physionet_audio_dir_path
 
 
+def plot_violin_plot(title, data, x, y, hue, figsize):
+    sns.set(style="whitegrid", palette="pastel", color_codes=True)
+    f, ax = plt.subplots(figsize=(figsize, figsize))
+    sns.violinplot(x="set", y="magnitude_bandwidth", hue=hue, data=data)
+    sns.despine(left=True)
+    f.suptitle(title, fontsize=18, fontweight='bold')
+    ax.set_xlabel(x, size=16, alpha=0.7)
+    ax.set_ylabel(y, size=16, alpha=0.7)
+    plt.legend(loc='upper left')
+
+
+def plot_kaggle_signals_on_square_grid_by_label(set_letter, label, grid_size, figsize):
+    indices = list(product(list(range(grid_size)), repeat=2))
+    f, ax = plt.subplots(grid_size, grid_size, figsize=(figsize, figsize))
+    plt.suptitle(label)
+    random_filenames = get_random_kaggle_filenames_by_label(grid_size ** 2, label, set_letter)
+    for grid_indices, filename in list(zip(indices, random_filenames)):
+        path = os.path.join(get_kaggle_audio_dir_path(set_letter), filename)
+        plot_wav_file_on_grid(path, ax, grid_indices)
+    plt.show()
+
+
 def plot_kaggle_signals_by_label(how_many, set_letter, label):
     audio_dir_path = get_kaggle_audio_dir_path(set_letter)
-    filenames = get_random_kaggle_filenames_by_label(how_many, audio_dir_path, label)
+    filenames = get_random_kaggle_filenames_by_label(how_many, label, )
     for filename in filenames:
         path = os.path.join(audio_dir_path, filename)
         plot_kaggle_signal(filename, path)

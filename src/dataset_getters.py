@@ -56,7 +56,8 @@ def get_physionet_label(audio_filename, labels):
     return labels.loc[labels['filename'] == audio_filename]['label'].values[0]
 
 
-def get_random_kaggle_filenames_by_label(how_many, directory, label):
+def get_random_kaggle_filenames_by_label(how_many, label, set_letter):
+    directory = get_kaggle_audio_dir_path(set_letter)
     file_to_find_regex = os.path.join(directory, label)
     file_to_find_regex += '*'
     paths_to_files_filtered_by_labels = glob.glob(file_to_find_regex)
