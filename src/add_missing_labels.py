@@ -1,7 +1,7 @@
 import csv
 import os
 
-from src.data_utils import get_kaggle_labels_path, get_audio_dir_path, KAGGLE_PATH, get_kaggle_label
+from src.dataset_getters import get_kaggle_labels_path, get_audio_dir_path, KAGGLE_PATH, get_kaggle_label
 
 if __name__ == '__main__':
     set_letter = 'a'

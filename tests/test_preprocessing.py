@@ -3,7 +3,7 @@ import os
 from unittest import TestCase
 
 from config import PROJECT_ROOT_DIR
-from src.data_utils import get_random_kaggle_filenames_by_label
+from src.dataset_getters import get_random_kaggle_filenames_by_label
 from src.signal_utils import find_wav_length, find_dataset_longest_wav, repeat_signal_length, get_raw_signal_from_file, \
     decimate_, prepare_signal_from_file
 
