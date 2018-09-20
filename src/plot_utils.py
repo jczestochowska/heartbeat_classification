@@ -5,11 +5,26 @@ from scipy.io import wavfile
 
 from src.dataset_getters import KAGGLE_PATH, get_audio_dir_path, get_kaggle_label, PHYSIONET_PATH, get_physionet_labels, \
     get_random_filenames, map_label_to_number, get_random_physionet_filenames_by_label, get_physionet_label, \
-    map_label_to_string
+    map_label_to_string, get_random_kaggle_filenames_by_label
 
 
-def plot_kaggle_signal(audio_filename, set_letter, path=KAGGLE_PATH):
-    path = os.path.join(get_audio_dir_path(path, set_letter), audio_filename)
+def plot_kaggle_signals_by_label(how_many, set_letter, label):
+    audio_dir_path = get_audio_dir_path(KAGGLE_PATH, set_letter)
+    filenames = get_random_kaggle_filenames_by_label(how_many, audio_dir_path, label)
+    for filename in filenames:
+        path = os.path.join(audio_dir_path, filename)
+        plot_kaggle_signal(filename, path)
+
+
+def plot_kaggle_signals(how_many, set_letter, path=KAGGLE_PATH):
+    audio_dir_path = get_audio_dir_path(path, set_letter)
+    random_filenames = get_random_filenames(how_many, audio_dir_path)
+    for filename in random_filenames:
+        path = os.path.join(audio_dir_path, filename)
+        plot_kaggle_signal(filename, path)
+
+
+def plot_kaggle_signal(audio_filename, path):
     label = get_kaggle_label(audio_filename)
     plot_wav_file(path, label)
 
