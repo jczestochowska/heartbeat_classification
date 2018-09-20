@@ -26,8 +26,12 @@ def get_physionet_labels_path():
     return os.path.join(PHYSIONET_PATH, 'physionet_labels.csv')
 
 
-def get_audio_dir_path(path, set_letter):
-    return os.path.join(path, 'set_' + set_letter)
+def get_kaggle_audio_dir_path(set_letter):
+    return os.path.join(KAGGLE_PATH, 'set_' + set_letter)
+
+
+def get_physionet_audio_dir_path(set_letter):
+    return os.path.join(PHYSIONET_PATH, 'set_' + set_letter)
 
 
 def get_random_filenames(how_many, directory):
