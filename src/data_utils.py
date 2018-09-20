@@ -41,6 +41,18 @@ def get_random_filenames(how_many, directory):
     return random.choices(population=filenames, k=how_many)
 
 
+def get_random_physionet_filenames_by_label(how_many, label, set_letter):
+    labels = get_physionet_labels()
+    filenames = labels.loc[labels['label'] == label][labels['filename'].str.match(set_letter)].sample(how_many)[
+        'filename'].values
+    return list(map(lambda x: x + '.wav', filenames))
+
+
+def get_physionet_labels():
+    labels_path = get_physionet_labels_path()
+    return pd.read_csv(labels_path, header=None, names=['filename', 'label'])
+
+
 def get_random_kaggle_filenames_by_label(how_many, directory, label):
     file_to_find_regex = os.path.join(directory, label)
     file_to_find_regex += '*'
@@ -53,9 +65,8 @@ def get_set_name(letter):
     return "set_" + letter
 
 
-def get_physionet_label(audio_filename, labels_path):
+def get_physionet_label(audio_filename, labels):
     audio_filename = os.path.splitext(audio_filename)[0]
-    labels = pd.read_csv(labels_path, header=None, names=['filename', 'label'])
     return labels.loc[labels['filename'] == audio_filename]['label'].values[0]
 
 
@@ -63,7 +74,7 @@ def get_kaggle_label(audio_filename):
     return re.search('^[^_]+', audio_filename).group(0)
 
 
-def map_label(label):
+def map_label_to_string(label):
     return "normal" if label == 1 else "abnormal"
 
 
@@ -73,10 +84,32 @@ def plot_kaggle_signal(audio_filename, set_letter, path=KAGGLE_PATH):
     plot_wav_file(path, label)
 
 
-def plot_physionet_signal(audio_filename, set_letter, path=PHYSIONET_PATH):
-    path = os.path.join(get_audio_dir_path(path, set_letter), audio_filename)
-    label = get_physionet_label(audio_filename, get_physionet_labels_path())
-    label = map_label(label)
+def plot_physionet_signals(how_many, set_letter, path=PHYSIONET_PATH):
+    audio_dir_path = get_audio_dir_path(path, set_letter)
+    labels = get_physionet_labels()
+    random_filenames = get_random_filenames(how_many, audio_dir_path)
+    for filename in random_filenames:
+        path = os.path.join(audio_dir_path, filename)
+        plot_physionet_signal(filename, labels, path)
+
+
+def map_label_to_number(label):
+    return 1 if label == 'normal' else -1
+
+
+def plot_physionet_signals_by_label(how_many, set_letter, label, path=PHYSIONET_PATH):
+    label = map_label_to_number(label)
+    audio_dir_path = get_audio_dir_path(path, set_letter)
+    labels = get_physionet_labels()
+    random_filenames = get_random_physionet_filenames_by_label(how_many, label, set_letter)
+    for filename in random_filenames:
+        path = os.path.join(audio_dir_path, filename)
+        plot_physionet_signal(filename, labels, path)
+
+
+def plot_physionet_signal(audio_filename, labels, path):
+    label = get_physionet_label(audio_filename, labels)
+    label = map_label_to_string(label)
     plot_wav_file(path, label)
 
 
