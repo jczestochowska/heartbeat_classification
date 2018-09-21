@@ -14,7 +14,7 @@ from src.dataset_getters import get_kaggle_audio_dir_path, get_kaggle_label, get
 def plot_violin_plot(title, data, x, y, hue, figsize):
     sns.set(style="whitegrid", palette="pastel", color_codes=True)
     f, ax = plt.subplots(figsize=(figsize, figsize))
-    sns.violinplot(x="set", y="magnitude_bandwidth", hue=hue, data=data)
+    sns.violinplot(x=x, y=y, hue=hue, data=data)
     sns.despine(left=True)
     f.suptitle(title, fontsize=18, fontweight='bold')
     ax.set_xlabel(x, size=16, alpha=0.7)
