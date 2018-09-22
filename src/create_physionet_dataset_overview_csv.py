@@ -14,7 +14,10 @@ if __name__ == '__main__':
     saving_path = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', csv_filename)
     with open(saving_path, 'w') as f:
         writer = csv.writer(f, delimiter=',')
-        writer.writerow(['filename', 'recording_length', 'sampling_frequency', 'magnitude_bandwidth', 'label', 'set'])
+        writer.writerow(
+            ['filename', 'recording_length', 'sampling_frequency', 'magnitude_bandwidth', 'max_magnitude',
+             'mean_magnitude', 'label',
+             'set'])
         for set_letter in set_letters:
             audio_dir_path = get_physionet_audio_dir_path(set_letter=set_letter)
             filenames = os.listdir(audio_dir_path)
@@ -25,5 +28,8 @@ if __name__ == '__main__':
                 sampling_frequency, signal = wavfile.read(file_path)
                 recording_length = round(len(signal) / sampling_frequency)
                 magnitude_bandwidth = max(signal) - min(signal)
-                writer.writerow([filename, recording_length, sampling_frequency, magnitude_bandwidth, label,
+                mean_magnitude = sum(signal) / len(signal)
+                writer.writerow(
+                    [filename, recording_length, sampling_frequency, magnitude_bandwidth, max(signal), mean_magnitude,
+                     label,
                                  get_set_name(set_letter)])
