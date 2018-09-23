@@ -56,4 +56,3 @@ class TestPreprocessing(TestCase):
     def test_prepare_signal_from_file(self):
         actual = prepare_signal_from_file(TEST_FILEPATH)[1]
         self.assertTrue(all(isinstance(number, int) for number in actual))
-

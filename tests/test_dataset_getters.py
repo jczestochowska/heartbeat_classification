@@ -4,7 +4,7 @@ from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
     get_physionet_labels, get_physionet_label, map_physionet_label_to_number, map_label_to_string, get_kaggle_label, \
-    get_kaggle_labels_path
+    get_kaggle_labels_path, map_kaggle_label_to_number
 
 SET_LETTER = 'a'
 
@@ -116,4 +116,22 @@ class TestDatasetGetters(TestCase):
     def test_map_label_to_string_non_existing_label(self):
         actual = map_label_to_string(10)
         expected = "abnormal"
+        self.assertEqual(expected, actual)
+
+    def test_map_label_kaggle_murmur(self):
+        label = 'murmur'
+        actual = map_kaggle_label_to_number(label)
+        expected = -1
+        self.assertEqual(expected, actual)
+
+    def test_map_label_kaggle_extrastole(self):
+        label = 'extrastole'
+        actual = map_kaggle_label_to_number(label)
+        expected = -1
+        self.assertEqual(expected, actual)
+
+    def test_map_label_kaggle_normal(self):
+        label = 'normal'
+        actual = map_kaggle_label_to_number(label)
+        expected = 1
         self.assertEqual(expected, actual)
