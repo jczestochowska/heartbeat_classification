@@ -112,4 +112,22 @@ def plot_wav_file_on_grid(path, grid, grid_coordinates):
     sampling_frequency, signal = wavfile.read(path)
     number_of_samples = len(signal)
     time = np.linspace(0, number_of_samples / sampling_frequency, num=number_of_samples)
+    grid[grid_coordinates[0], grid_coordinates[1]].set_title(os.path.basename(path))
     grid[grid_coordinates[0], grid_coordinates[1]].plot(time, signal)
+
+
+def plot_boxplot_on_square_grid_by_label(set_letter, label, grid_size, figsize):
+    indices = list(product(list(range(grid_size)), repeat=2))
+    f, ax = plt.subplots(grid_size, grid_size, figsize=(figsize, figsize))
+    plt.suptitle(get_set_name(set_letter) + " " + label)
+    random_filenames = get_random_kaggle_filenames_by_label(grid_size ** 2, label, set_letter)
+    for grid_indices, filename in list(zip(indices, random_filenames)):
+        path = os.path.join(get_kaggle_audio_dir_path(set_letter), filename)
+        plot_boxplot_on_grid(path, ax, grid_indices)
+    plt.show()
+
+
+def plot_boxplot_on_grid(path, grid, grid_coordinates):
+    sampling_frequency, signal = wavfile.read(path)
+    grid[grid_coordinates[0], grid_coordinates[1]].set_title(os.path.basename(path))
+    grid[grid_coordinates[0], grid_coordinates[1]].boxplot(signal)
