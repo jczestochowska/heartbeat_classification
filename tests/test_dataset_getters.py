@@ -85,7 +85,14 @@ class TestDatasetGetters(TestCase):
     def test_get_kaggle_label_from_set_a(self):
         labels = pd.read_csv(get_kaggle_labels_path('a'))
         actual = get_kaggle_label(set_letter='a', audio_filename="extrahls__201101070953.wav", labels=labels)
-        expected = -1
+        expected = 'murmur'
+        self.assertEqual(expected, actual)
+
+    def test_get_kaggle_label_from_set_b(self):
+        labels = pd.read_csv(get_kaggle_labels_path('b'))
+        actual = get_kaggle_label(set_letter='b', audio_filename="murmur_noisymurmur_292_1311185449649_D.wav",
+                                  labels=labels)
+        expected = 'murmur'
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_normal(self):

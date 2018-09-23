@@ -74,7 +74,6 @@ def get_kaggle_label(audio_filename, set_letter, labels=None):
         label = re.search('^[^_]+', audio_filename).group(0)
     elif set_letter == 'a':
         label = labels.loc[labels['filename'] == audio_filename]['new_label'].values[0]
-        label = map_kaggle_label_to_number(label)
     return label
 
 
