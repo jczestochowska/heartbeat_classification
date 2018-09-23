@@ -1,8 +1,10 @@
+import pandas as pd
 from operator import methodcaller
 from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
-    get_physionet_labels, get_physionet_label, map_label_to_number, map_label_to_string, get_kaggle_label
+    get_physionet_labels, get_physionet_label, map_physionet_label_to_number, map_label_to_string, get_kaggle_label, \
+    get_kaggle_labels_path
 
 SET_LETTER = 'a'
 
@@ -71,27 +73,33 @@ class TestDatasetGetters(TestCase):
         self.assertEqual(expected, actual)
 
     def test_get_kaggle_label_from_filename_murmur(self):
-        actual = get_kaggle_label(audio_filename="murmur_01110.wav")
+        actual = get_kaggle_label(set_letter='b', audio_filename="murmur_01110.wav")
         expected = 'murmur'
         self.assertEqual(expected, actual)
 
     def test_get_kaggle_label_from_filename_wrong_filename(self):
-        actual = get_kaggle_label(audio_filename="nosuchlabel_01110.wav")
+        actual = get_kaggle_label(set_letter='b', audio_filename="nosuchlabel_01110.wav")
         expected = 'nosuchlabel'
         self.assertEqual(expected, actual)
 
+    def test_get_kaggle_label_from_set_a(self):
+        labels = pd.read_csv(get_kaggle_labels_path('a'))
+        actual = get_kaggle_label(set_letter='a', audio_filename="extrahls__201101070953.wav", labels=labels)
+        expected = -1
+        self.assertEqual(expected, actual)
+
     def test_map_label_to_number_normal(self):
-        actual = map_label_to_number("normal")
+        actual = map_physionet_label_to_number("normal")
         expected = 1
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_abnormal(self):
-        actual = map_label_to_number("abnormal")
+        actual = map_physionet_label_to_number("abnormal")
         expected = -1
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_non_existing_label(self):
-        actual = map_label_to_number("no such label")
+        actual = map_physionet_label_to_number("no such label")
         expected = -1
         self.assertEqual(expected, actual)
 

@@ -13,7 +13,7 @@ PHYSIONET_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'physionet')
 LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
                                'data',
                                'labels_merged_sets.csv')
-
+LABELS_MAPPING = {'murmur': -1, 'artifact': 0, 'normal': 1, 'extrastole': -1}
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
@@ -69,13 +69,22 @@ def get_set_name(letter):
     return "set_" + letter
 
 
-def get_kaggle_label(audio_filename):
-    return re.search('^[^_]+', audio_filename).group(0)
+def get_kaggle_label(audio_filename, set_letter, labels=None):
+    if set_letter == 'b':
+        label = re.search('^[^_]+', audio_filename).group(0)
+    elif set_letter == 'a':
+        label = labels.loc[labels['filename'] == audio_filename]['new_label'].values[0]
+        label = map_kaggle_label_to_number(label)
+    return label
 
 
 def map_label_to_string(label):
     return "normal" if label == 1 else "abnormal"
 
 
-def map_label_to_number(label):
+def map_physionet_label_to_number(label):
     return 1 if label == 'normal' else -1
+
+
+def map_kaggle_label_to_number(label):
+    return LABELS_MAPPING[label]

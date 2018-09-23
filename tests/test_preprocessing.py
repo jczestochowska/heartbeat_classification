@@ -54,7 +54,6 @@ class TestPreprocessing(TestCase):
         self.assertRaises(ValueError)
 
     def test_prepare_signal_from_file(self):
-        actual = prepare_signal_from_file(TEST_FILEPATH)
-        self.assertEqual(776, len(actual))
+        actual = prepare_signal_from_file(TEST_FILEPATH)[1]
         self.assertTrue(all(isinstance(number, int) for number in actual))
 
