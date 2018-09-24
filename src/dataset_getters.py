@@ -3,7 +3,6 @@ import logging
 import os
 import pandas as pd
 import random
-import re
 
 from config import PROJECT_ROOT_DIR
 
@@ -11,9 +10,7 @@ KAGGLE_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'kaggle')
 PHYSIONET_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'physionet')
 MERGED_DATASETS_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'merged_datasets')
 
-LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
-                               'data',
-                               'labels_merged_sets.csv')
+LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'labels_merged_datasets.csv')
 LABELS_MAPPING = {'murmur': -1, 'artifact': 0, 'normal': 1, 'extrastole': -1}
 LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
@@ -47,20 +44,21 @@ def get_random_file_paths(how_many, directory):
 
 
 def get_random_physionet_filenames_by_label(how_many, label, set_letter):
-    labels = get_physionet_labels()
-    filenames = labels.loc[labels['label'] == label][labels['filename'].str.match(set_letter)].sample(how_many)[
-        'filename'].values
-    return list(map(lambda x: x + '.wav', filenames))
+    labels = get_labels()
+    return labels.loc[labels['label'] == label][labels['fname'].str.match(set_letter)].sample(how_many)[
+        'fname'].values
 
 
-def get_physionet_labels():
-    labels_path = get_physionet_labels_path()
-    return pd.read_csv(labels_path, header=None, names=['filename', 'label'])
+def get_labels():
+    return pd.read_csv(LABELS_FILEPATH)
 
 
-def get_physionet_label(audio_filename, labels):
-    audio_filename = os.path.splitext(audio_filename)[0]
-    return labels.loc[labels['filename'] == audio_filename]['label'].values[0]
+def get_label(audio_filename, labels):
+    try:
+        label = labels.loc[labels['fname'] == audio_filename]['label'].values[0]
+        return label
+    except IndexError:
+        LOGGER.warning("no label found for file {}".format(audio_filename))
 
 
 def get_random_kaggle_filenames_by_label(how_many, label, set_letter):
@@ -74,14 +72,6 @@ def get_random_kaggle_filenames_by_label(how_many, label, set_letter):
 
 def get_set_name(letter):
     return "set_" + letter
-
-
-def get_kaggle_label(audio_filename, set_letter, labels=None):
-    if set_letter == 'b':
-        label = re.search('^[^_]+', audio_filename).group(0)
-    elif set_letter == 'a':
-        label = labels.loc[labels['filename'] == audio_filename]['new_label'].values[0]
-    return label
 
 
 def map_label_to_string(label):

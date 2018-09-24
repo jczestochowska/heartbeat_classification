@@ -6,8 +6,8 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
 
-from src.dataset_getters import get_kaggle_audio_dir_path, get_kaggle_label, get_physionet_labels, \
-    get_random_filenames, map_physionet_label_to_number, get_random_physionet_filenames_by_label, get_physionet_label, \
+from src.dataset_getters import get_kaggle_audio_dir_path, get_kaggle_label, get_labels, \
+    get_random_filenames, map_physionet_label_to_number, get_random_physionet_filenames_by_label, get_label, \
     map_label_to_string, get_random_kaggle_filenames_by_label, get_physionet_audio_dir_path, get_set_name
 
 
@@ -64,7 +64,7 @@ def plot_kaggle_signal(audio_filename, path):
 
 def plot_physionet_signals(how_many, set_letter):
     audio_dir_path = get_physionet_audio_dir_path(set_letter)
-    labels = get_physionet_labels()
+    labels = get_labels()
     random_filenames = get_random_filenames(how_many, audio_dir_path)
     for filename in random_filenames:
         path = os.path.join(audio_dir_path, filename)
@@ -85,7 +85,7 @@ def plot_physionet_signals_on_square_grid_by_label(set_letter, label, grid_size,
 def plot_physionet_signals_by_label(how_many, set_letter, label):
     label = map_physionet_label_to_number(label)
     audio_dir_path = get_physionet_audio_dir_path(set_letter)
-    labels = get_physionet_labels()
+    labels = get_labels()
     random_filenames = get_random_physionet_filenames_by_label(how_many, label, set_letter)
     for filename in random_filenames:
         path = os.path.join(audio_dir_path, filename)
@@ -93,7 +93,7 @@ def plot_physionet_signals_by_label(how_many, set_letter, label):
 
 
 def plot_physionet_signal(audio_filename, labels, path):
-    label = get_physionet_label(audio_filename, labels)
+    label = get_label(audio_filename, labels)
     label = map_label_to_string(label)
     plot_wav_file(path, label)
 

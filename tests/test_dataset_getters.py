@@ -1,12 +1,11 @@
-import pandas as pd
 from operator import methodcaller
 from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
-    get_physionet_labels, get_physionet_label, map_physionet_label_to_number, map_label_to_string, get_kaggle_label, \
-    get_kaggle_labels_path, map_kaggle_label_to_number
+    get_labels, get_label, map_physionet_label_to_number, map_label_to_string, map_kaggle_label_to_number
 
 SET_LETTER = 'a'
+
 
 class TestDatasetGetters(TestCase):
     def test_get_random_kaggle_filenames_by_label(self):
@@ -39,60 +38,49 @@ class TestDatasetGetters(TestCase):
         actual = all(element == True for element in list(map(methodcaller("endswith", ".wav"), actual_list)))
         self.assertTrue(actual)
 
-    def test_get_physionet_labels_adds_columnnames(self):
-        actual = list(get_physionet_labels().columns)
-        expected = ['filename', 'label']
+    def test_get_physionet_labels_column_names(self):
+        actual = list(get_labels().columns)
+        expected = ['fname', 'label']
         self.assertListEqual(expected, actual)
 
     def test_get_physionet_label_without_extension(self):
-        labels = get_physionet_labels()
+        labels = get_labels()
         audio_filename = 'a0001'
-        expected = 1
-        actual = get_physionet_label(audio_filename, labels)
+        expected = None
+        actual = get_label(audio_filename, labels)
         self.assertEqual(expected, actual)
 
     def test_get_physionet_label_with_extension(self):
-        labels = get_physionet_labels()
+        labels = get_labels()
         audio_filename = 'a0001.wav'
         expected = 1
-        actual = get_physionet_label(audio_filename, labels)
+        actual = get_label(audio_filename, labels)
         self.assertEqual(expected, actual)
 
     def test_get_physionet_normal_label(self):
-        labels = get_physionet_labels()
+        labels = get_labels()
         expected = 1
         audio_filename = get_random_physionet_filenames_by_label(how_many=1, label=expected, set_letter='a')[0]
-        actual = get_physionet_label(audio_filename, labels)
+        actual = get_label(audio_filename, labels)
         self.assertEqual(expected, actual)
 
     def test_get_physionet_abnormal_label(self):
-        labels = get_physionet_labels()
+        labels = get_labels()
         expected = -1
         audio_filename = get_random_physionet_filenames_by_label(how_many=1, label=expected, set_letter='a')[0]
-        actual = get_physionet_label(audio_filename, labels)
+        actual = get_label(audio_filename, labels)
         self.assertEqual(expected, actual)
 
-    def test_get_kaggle_label_from_filename_murmur(self):
-        actual = get_kaggle_label(set_letter='b', audio_filename="murmur_01110.wav")
-        expected = 'murmur'
+    def test_get_label_for_non_existing_file(self):
+        labels = get_labels()
+        actual = get_label(audio_filename="nosuchlabel_01110.wav", labels=labels)
+        expected = None
         self.assertEqual(expected, actual)
 
-    def test_get_kaggle_label_from_filename_wrong_filename(self):
-        actual = get_kaggle_label(set_letter='b', audio_filename="nosuchlabel_01110.wav")
-        expected = 'nosuchlabel'
-        self.assertEqual(expected, actual)
-
-    def test_get_kaggle_label_from_set_a(self):
-        labels = pd.read_csv(get_kaggle_labels_path('a'))
-        actual = get_kaggle_label(set_letter='a', audio_filename="extrahls__201101070953.wav", labels=labels)
-        expected = 'murmur'
-        self.assertEqual(expected, actual)
-
-    def test_get_kaggle_label_from_set_b(self):
-        labels = pd.read_csv(get_kaggle_labels_path('b'))
-        actual = get_kaggle_label(set_letter='b', audio_filename="murmur_noisymurmur_292_1311185449649_D.wav",
-                                  labels=labels)
-        expected = 'murmur'
+    def test_get_label(self):
+        labels = get_labels()
+        actual = get_label(audio_filename="extrahls__201101070953.wav", labels=labels)
+        expected = 1
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_normal(self):
