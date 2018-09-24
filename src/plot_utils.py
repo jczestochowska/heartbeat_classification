@@ -6,7 +6,7 @@ import seaborn as sns
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
 
-from src.dataset_getters import get_kaggle_audio_dir_path, get_kaggle_label, get_labels, \
+from src.dataset_getters import get_kaggle_audio_dir_path, get_labels, \
     get_random_filenames, map_physionet_label_to_number, get_random_physionet_filenames_by_label, get_label, \
     map_label_to_string, get_random_kaggle_filenames_by_label, get_physionet_audio_dir_path, get_set_name
 
