@@ -33,6 +33,14 @@ def plot_kaggle_signals_on_square_grid_by_label(set_letter, label, grid_size, fi
     plt.show()
 
 
+def plot_signals_on_square_grid(file_paths, grid_size, figsize):
+    indices = list(product(list(range(grid_size)), repeat=2))
+    f, ax = plt.subplots(grid_size, grid_size, figsize=(figsize, figsize))
+    for grid_indices, path in list(zip(indices, file_paths)):
+        plot_wav_file_on_grid(path, ax, grid_indices)
+    plt.show()
+
+
 def plot_kaggle_signals_by_label(how_many, set_letter, label):
     audio_dir_path = get_kaggle_audio_dir_path(set_letter)
     filenames = get_random_kaggle_filenames_by_label(how_many, label, )

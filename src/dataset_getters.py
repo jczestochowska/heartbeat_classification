@@ -9,6 +9,7 @@ from config import PROJECT_ROOT_DIR
 
 KAGGLE_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'kaggle')
 PHYSIONET_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'physionet')
+MERGED_DATASETS_PATH = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'merged_datasets')
 
 LABELS_FILEPATH = os.path.join(os.path.split(os.path.abspath(__file__))[0],
                                'data',
@@ -37,6 +38,12 @@ def get_physionet_audio_dir_path(set_letter):
 def get_random_filenames(how_many, directory):
     filenames = os.listdir(directory)
     return random.choices(population=filenames, k=how_many)
+
+
+def get_random_file_paths(how_many, directory):
+    filenames = os.listdir(directory)
+    filenames = random.choices(population=filenames, k=how_many)
+    return [os.path.join(directory, filename) for filename in filenames]
 
 
 def get_random_physionet_filenames_by_label(how_many, label, set_letter):
