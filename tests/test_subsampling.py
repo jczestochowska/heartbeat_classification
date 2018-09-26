@@ -3,7 +3,7 @@ import scipy
 from unittest import TestCase
 
 from src.data_preparation import get_one_second_chunks, downsample_chunks, chunks_magnitude_normalization
-from tests.test_preprocessing import TEST_FILEPATH
+from tests.test_signal_utils import TEST_FILEPATH
 
 
 class TestSubsampling(TestCase):

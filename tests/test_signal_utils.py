@@ -15,7 +15,7 @@ TEST_FILEPATH2 = os.path.join(PROJECT_ROOT_DIR,
 TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests', 'test_preprocessing_dir', 'test_labels')
 
 
-class TestPreprocessing(TestCase):
+class TestSignalUtils(TestCase):
     def test_find_wav_length(self):
         actual = find_wav_length(TEST_FILEPATH)
         expected = 396900

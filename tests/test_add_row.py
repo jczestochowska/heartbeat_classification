@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from src.create_numerical_dataset import create_row
-from tests.test_preprocessing import TEST_DIR_PATH
+from tests.test_signal_utils import TEST_DIR_PATH
 
 
 class TestCreateNumericalDataset(TestCase):
