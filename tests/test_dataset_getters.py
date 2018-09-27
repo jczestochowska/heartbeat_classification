@@ -2,7 +2,8 @@ from operator import methodcaller
 from unittest import TestCase
 
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
-    get_labels, get_label, map_physionet_label_to_number, map_label_to_string, map_kaggle_label_to_number
+    get_labels, get_label, map_physionet_label_to_number, map_label_to_string, map_kaggle_label_to_number, \
+    get_label_from_filename_processed
 
 SET_LETTER = 'a'
 
@@ -129,4 +130,22 @@ class TestDatasetGetters(TestCase):
         label = 'normal'
         actual = map_kaggle_label_to_number(label)
         expected = 1
+        self.assertEqual(expected, actual)
+
+    def test_get_label_from_filename_processed_abnormal(self):
+        filename = "-1_ihedoichcoiscdcd.wav"
+        actual = get_label_from_filename_processed(filename)
+        expected = '-1'
+        self.assertEqual(expected, actual)
+
+    def test_get_label_from_filename_processed_normal(self):
+        filename = "1_ihedoichcoiscdcd.wav"
+        actual = get_label_from_filename_processed(filename)
+        expected = '1'
+        self.assertEqual(expected, actual)
+
+    def test_get_label_from_filename_processed_not_heartbeat(self):
+        filename = "0_ihedoichcoiscdcd.wav"
+        actual = get_label_from_filename_processed(filename)
+        expected = '0'
         self.assertEqual(expected, actual)

@@ -16,6 +16,12 @@ LOGGER = logging.getLogger(__name__)
 LOGGER.setLevel(logging.INFO)
 
 
+def get_label_from_filename_processed(filename):
+    label = filename[0]
+    if label == '-':
+        label = '-1'
+    return label
+
 def get_kaggle_labels_path(set_letter):
     return os.path.join(KAGGLE_PATH, 'set_' + set_letter + '.csv')
 
