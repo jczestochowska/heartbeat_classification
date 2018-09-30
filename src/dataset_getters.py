@@ -55,8 +55,8 @@ def get_random_physionet_filenames_by_label(how_many, label, set_letter):
         'fname'].values
 
 
-def get_labels():
-    return pd.read_csv(LABELS_FILEPATH)
+def get_labels(labels_filepath=LABELS_FILEPATH):
+    return pd.read_csv(labels_filepath)
 
 
 def get_label(audio_filename, labels):
