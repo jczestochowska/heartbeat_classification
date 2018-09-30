@@ -74,3 +74,14 @@ if __name__ == '__main__':
     os.mkdir(KAGGLE_DESTINATION_DIR)
     pool = Pool(5)
     pool.starmap(preprocess_kaggle_file, filenames_with_paths)
+
+    set_letters = string.ascii_lowercase[0:6]
+    filenames_with_paths = []
+    for set_letter in set_letters:
+        set_name = 'set_' + set_letter
+        source_dir = os.path.join(PROJECT_ROOT_DIR, 'data', 'raw', 'physionet', set_name)
+        filenames = os.listdir(source_dir)
+        filenames_with_paths.extend(list(product(filenames, [source_dir])))
+    os.mkdir(PHYSIONET_DESTINATION_DIR)
+    pool = Pool(5)
+    pool.starmap(preprocess_physionet_file, filenames_with_paths)
