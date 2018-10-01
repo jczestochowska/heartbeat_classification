@@ -40,6 +40,7 @@ ptyprocess==0.5.2
 Pygments==2.2.0
 pyparsing==2.2.0
 python-dateutil==2.7.3
+python-speech-features==0.6
 pytz==2018.4
 pyzmq==17.0.0
 qtconsole==4.3.1
