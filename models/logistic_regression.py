@@ -12,13 +12,13 @@ TEST_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed'
                            'test_labels.npy')
 
 
-def main(weights_shape, num_epochs, batch_size=200, training_step=0.2):
+def main(num_epochs, batch_size=200, training_step=0.2):
     train_features, test_features, train_labels, test_labels = load_dataset()
     random_normal_initializer = tf.initializers.random_normal()
 
-    weights = tf.get_variable('weights', shape=[train_features.shape[1], weights_shape], dtype=tf.float32,
+    weights = tf.get_variable('weights', shape=[train_features.shape[1], 2], dtype=tf.float32,
                               initializer=random_normal_initializer)
-    bias = tf.get_variable('bias', shape=weights_shape, dtype=tf.float32, initializer=random_normal_initializer)
+    bias = tf.get_variable('bias', shape=2, dtype=tf.float32, initializer=random_normal_initializer)
 
     features = tf.placeholder(shape=[None, train_features.shape[1]], dtype=tf.float32)
     labels = tf.placeholder(shape=[None], dtype=tf.int64)
@@ -58,4 +58,4 @@ def next_batch(num, data, labels):
 
 
 if __name__ == '__main__':
-    main(weights_shape=10, num_epochs=500)
+    main(num_epochs=500)
