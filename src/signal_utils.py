@@ -19,7 +19,7 @@ def find_dataset_longest_wav(data_dir_path):
 
 
 def find_wav_length(wav_filepath):
-    return len(get_raw_signal_from_file(wav_filepath))
+    return len(get_raw_signal_from_file(wav_filepath, '')[0])
 
 
 def prepare_signal_from_file(signal_filepath):
@@ -29,8 +29,8 @@ def prepare_signal_from_file(signal_filepath):
     return sampling_rate, signal
 
 
-def get_raw_signal_from_file(wav_filepath):
-    return wavfile.read(wav_filepath)[1]
+def get_raw_signal_from_file(wav_filepath, label):
+    return wavfile.read(wav_filepath)[1], label
 
 
 def repeat_signal_length(initial_signal, expected_length=LONGEST_AUDIO_LENGTH):

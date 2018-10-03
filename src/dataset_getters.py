@@ -17,10 +17,7 @@ LOGGER.setLevel(logging.INFO)
 
 
 def get_label_from_filename_processed(filename):
-    label = filename[0]
-    if label == '-':
-        label = '-1'
-    return label
+    return filename.split('_')[0]
 
 
 def get_kaggle_labels_path(set_letter):

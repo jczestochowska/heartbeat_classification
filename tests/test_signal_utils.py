@@ -37,7 +37,7 @@ class TestSignalUtils(TestCase):
         self.assertEqual(actual, expected)
 
     def test_get_raw_signal_from_file(self):
-        actual = len(get_raw_signal_from_file(TEST_FILEPATH1))
+        actual = len(get_raw_signal_from_file(TEST_FILEPATH1, '')[0])
         expected = 45233
         self.assertEqual(actual, expected)
 
