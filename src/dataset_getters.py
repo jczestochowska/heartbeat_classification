@@ -22,8 +22,13 @@ def get_label_from_filename_processed(filename):
         label = '-1'
     return label
 
+
 def get_kaggle_labels_path(set_letter):
     return os.path.join(KAGGLE_PATH, 'set_' + set_letter + '.csv')
+
+
+def get_kaggle_labels_path():
+    return os.path.join(KAGGLE_PATH, 'labels_kaggle.csv')
 
 
 def get_physionet_labels_path():

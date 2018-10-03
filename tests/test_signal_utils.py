@@ -12,7 +12,7 @@ TEST_FILEPATH1 = os.path.join(PROJECT_ROOT_DIR,
                               'data', 'raw', 'merged_datasets', 'extrastole__151_1306779785624_B.wav')
 TEST_FILEPATH2 = os.path.join(PROJECT_ROOT_DIR,
                               'tests', 'test_preprocessing_dir', 'extrastole_128_1306344005749_A.wav')
-TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests', 'test_preprocessing_dir', 'test_labels')
+TEST_LABELS_FILEPATH = os.path.join(PROJECT_ROOT_DIR, 'tests', 'test_preprocessing_dir', 'test_labels.csv')
 
 
 class TestSignalUtils(TestCase):
