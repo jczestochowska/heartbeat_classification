@@ -1,11 +1,14 @@
+import os
 from operator import methodcaller
 from unittest import TestCase
 
+from config import PROJECT_ROOT_DIR
 from src.dataset_getters import get_random_kaggle_filenames_by_label, get_random_physionet_filenames_by_label, \
     get_labels, get_label, map_physionet_label_to_number, map_label_to_string, map_kaggle_label_to_number, \
-    get_label_from_filename_processed
+    get_label_from_filename_processed, get_numeric_labels_for_filenames
 
 SET_LETTER = 'a'
+TEST_PROCESSED_DIR_PATH = os.path.join(PROJECT_ROOT_DIR, 'tests', 'test_processed_dir')
 
 
 class TestDatasetGetters(TestCase):
@@ -148,4 +151,9 @@ class TestDatasetGetters(TestCase):
         filename = "0_ihedoichcoiscdcd.wav"
         actual = get_label_from_filename_processed(filename)
         expected = '0'
+        self.assertEqual(expected, actual)
+
+    def test_get_numeric_labels_for_filenames(self):
+        actual = get_numeric_labels_for_filenames(os.listdir(TEST_PROCESSED_DIR_PATH))
+        expected = [1, 1, 0, 0]
         self.assertEqual(expected, actual)

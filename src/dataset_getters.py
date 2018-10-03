@@ -92,3 +92,10 @@ def map_physionet_label_to_number(label):
 
 def map_kaggle_label_to_number(label):
     return LABELS_MAPPING[label]
+
+
+def get_numeric_labels_for_filenames(filenames):
+    labels = []
+    for filename in filenames:
+        labels.append(get_label_from_filename_processed(filename))
+    return list(map(map_physionet_label_to_number, labels))
