@@ -86,17 +86,17 @@ class TestDatasetGetters(TestCase):
 
     def test_map_label_to_number_normal(self):
         actual = map_physionet_label_to_number("normal")
-        expected = 1
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_abnormal(self):
         actual = map_physionet_label_to_number("abnormal")
-        expected = -1
+        expected = 1
         self.assertEqual(expected, actual)
 
     def test_map_label_to_number_non_existing_label(self):
         actual = map_physionet_label_to_number("no such label")
-        expected = -1
+        expected = 0
         self.assertEqual(expected, actual)
 
     def test_map_label_to_string_normal(self):

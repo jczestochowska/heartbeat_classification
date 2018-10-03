@@ -87,7 +87,7 @@ def map_label_to_string(label):
 
 
 def map_physionet_label_to_number(label):
-    return 1 if label == 'normal' else -1
+    return 1 if label == 'abnormal' else 0
 
 
 def map_kaggle_label_to_number(label):
