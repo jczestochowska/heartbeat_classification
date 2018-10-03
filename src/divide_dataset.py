@@ -1,5 +1,4 @@
 import os
-import random
 import shutil
 from sklearn.model_selection import train_test_split
 
@@ -15,16 +14,18 @@ if __name__ == '__main__':
     os.mkdir(TRAINING_DIR)
     os.mkdir(TEST_DIR)
     normal_samples = os.listdir(PHYSIONET_NORMAL_DIR)
-    num_normal_samples = len(normal_samples)
-    all_abnormal_samples = os.listdir(PHYSIONET_ABNORMAL_DIR)
-    abnormal_samples = random.choices(all_abnormal_samples, k=num_normal_samples)
-    normal_divided = train_test_split(normal_samples, train_size=0.7)
-    abnormal_divided = train_test_split(abnormal_samples, train_size=0.7)
-    for filename in normal_divided[0]:
-        shutil.copy(os.path.join(PHYSIONET_NORMAL_DIR, filename), TRAINING_DIR)
-    for filename in abnormal_divided[0]:
-        shutil.copy(os.path.join(PHYSIONET_ABNORMAL_DIR, filename), TRAINING_DIR)
-    for filename in normal_divided[1]:
-        shutil.copy(os.path.join(PHYSIONET_NORMAL_DIR, filename), TEST_DIR)
-    for filename in abnormal_divided[1]:
-        shutil.copy(os.path.join(PHYSIONET_ABNORMAL_DIR, filename), TEST_DIR)
+    abnormal_samples = os.listdir(PHYSIONET_ABNORMAL_DIR)
+    dataset = normal_samples + abnormal_samples
+    divided = train_test_split(dataset, train_size=0.7)
+    for filename in divided[0]:
+        if filename.split('_')[0] == 'abnormal':
+            directory = PHYSIONET_ABNORMAL_DIR
+        else:
+            directory = PHYSIONET_NORMAL_DIR
+        shutil.copy(os.path.join(directory, filename), TRAINING_DIR)
+    for filename in divided[1]:
+        if filename.split('_')[0] == 'abnormal':
+            directory = PHYSIONET_ABNORMAL_DIR
+        else:
+            directory = PHYSIONET_NORMAL_DIR
+        shutil.copy(os.path.join(directory, filename), TEST_DIR)
