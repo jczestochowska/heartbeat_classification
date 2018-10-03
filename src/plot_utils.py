@@ -3,6 +3,7 @@ from itertools import product
 import numpy as np
 import os
 import seaborn as sns
+from librosa import display
 from matplotlib import pyplot as plt
 from scipy.io import wavfile
 
@@ -139,3 +140,11 @@ def plot_boxplot_on_grid(path, grid, grid_coordinates):
     sampling_frequency, signal = wavfile.read(path)
     grid[grid_coordinates[0], grid_coordinates[1]].set_title(os.path.basename(path))
     grid[grid_coordinates[0], grid_coordinates[1]].boxplot(signal)
+
+
+def plot_mfcc(figsize, title, mfccs):
+    plt.figure(figsize=figsize)
+    display.specshow(mfccs, x_axis='time')
+    plt.colorbar()
+    plt.title(title)
+    plt.tight_layout()
