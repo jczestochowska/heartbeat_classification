@@ -12,7 +12,7 @@ TEST_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed'
                            'test_labels.npy')
 
 
-def main(num_epochs, batch_size=10, training_step=0.1):
+def main(num_epochs, batch_size=20, training_step=0.1):
     train_features, test_features, train_labels, test_labels = load_dataset()
 
     balanced_dataset = get_balanced_dataset(train_features, train_labels)
@@ -36,11 +36,21 @@ def main(num_epochs, batch_size=10, training_step=0.1):
     for epoch in range(num_epochs):
         _, loss_value = sess.run([optimizer, cross_entropy])
         correct_prediction = tf.equal(tf.argmax(logits, 1), labels)
-        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32), name='accuracy')
+        precision, precision_update = tf.metrics.precision(labels=labels,
+                                                           predictions=tf.argmax(logits, 1),
+                                                           name="precision")
+        recall, recall_update = tf.metrics.recall(labels=labels,
+                                                  predictions=tf.argmax(logits, 1),
+                                                  name="recall")
+        sess.run(tf.local_variables_initializer())
+
         print('-------------------------------------------------------------')
         print("Epoch: {}".format(epoch))
         print("training accuracy: ", sess.run(accuracy, feed_dict={features: train_features, labels: train_labels}))
         print("testing accuracy: ", sess.run(accuracy, feed_dict={features: test_features, labels: test_labels}))
+        print("test precision: ", sess.run(precision_update, feed_dict={features: test_features, labels: test_labels}))
+        print("test recall: ", sess.run(recall_update, feed_dict={features: test_features, labels: test_labels}))
         print('-------------------------------------------------------------')
 
 
@@ -67,4 +77,4 @@ def get_balanced_dataset(train_features, train_labels):
 
 
 if __name__ == '__main__':
-    main(num_epochs=1000)
+    main(num_epochs=200)
