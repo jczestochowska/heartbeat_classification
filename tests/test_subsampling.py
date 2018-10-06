@@ -2,22 +2,33 @@ import numpy as np
 import scipy
 from unittest import TestCase
 
-from src.data_preparation import get_one_second_chunks, downsample_chunks, chunks_magnitude_normalization
+from src.data_preparation import get_chunks, downsample_chunks, chunks_magnitude_normalization
 from tests.test_signal_utils import TEST_FILEPATH
 
 
 class TestSubsampling(TestCase):
     def test_get_chunks_chunks_have_correct_length(self):
+        # given
+        chunk_length = 5
+        # when
         fs, signal = scipy.io.wavfile.read(TEST_FILEPATH)
-        actual = get_one_second_chunks(fs, signal)
-        actual = all(element == fs for element in list(map(len, actual)))
+        signal = signal.tolist()
+        actual = get_chunks(chunk_length, signal, fs, len(signal) // fs)
+        # then
+        actual = all(element == chunk_length * fs for element in list(map(len, actual)))
         self.assertTrue(actual)
 
     def test_get_chunks_returns_correct_number_of_chunks(self):
+        # given
         fs, signal = scipy.io.wavfile.read(TEST_FILEPATH)
-        actual = get_one_second_chunks(fs, signal)
+        signal = signal.tolist()
         audio_length = len(signal) // fs
-        self.assertEqual(len(actual), audio_length)
+        chunk_length = 5
+        chunks_number = round(audio_length / chunk_length)
+        # when
+        actual = get_chunks(chunk_length=chunk_length, signal=signal, sampling_rate=fs, audio_length=audio_length)
+        # then
+        self.assertEqual(len(actual), chunks_number)
 
     def test_downsample_chunks(self):
         data = [np.linspace(0, 100, 3000), np.linspace(0, 100, 3000)]

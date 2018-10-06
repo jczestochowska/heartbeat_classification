@@ -7,9 +7,13 @@ from src.dataset_getters import MERGED_DATASETS_PATH
 data_dir_path = MERGED_DATASETS_PATH
 
 
-def get_one_second_chunks(sampling_rate, signal):
-    audio_length = len(signal) // sampling_rate
-    return [signal[i * sampling_rate:(i + 1) * sampling_rate] for i in range(audio_length)]
+def get_chunks(chunk_length, signal, sampling_rate, audio_length):
+    chunks_number = round(audio_length / chunk_length)
+    if (audio_length / chunk_length) > 1:
+        samples_missing = (chunk_length * sampling_rate - len(signal[chunk_length * sampling_rate:]))
+        signal += signal[0:samples_missing]
+    return [signal[i * chunk_length * sampling_rate:(i + 1) * chunk_length * sampling_rate] for i in
+            range(chunks_number)]
 
 
 def downsample_chunks(chunks, new_sampling_rate=2000):
