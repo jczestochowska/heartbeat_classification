@@ -5,7 +5,7 @@ from scipy.io import wavfile
 
 from config import PROJECT_ROOT_DIR
 from src.dataset_getters import get_physionet_audio_dir_path, get_labels, get_label, get_set_name, \
-    map_label_to_string
+    map_physionet_label_to_string
 
 if __name__ == '__main__':
     set_letters = list(string.ascii_lowercase[0:6])
@@ -24,7 +24,7 @@ if __name__ == '__main__':
             for filename in filenames:
                 file_path = os.path.join(audio_dir_path, filename)
                 label = get_label(filename, labels)
-                label = map_label_to_string(label)
+                label = map_physionet_label_to_string(label)
                 sampling_frequency, signal = wavfile.read(file_path)
                 recording_length = round(len(signal) / sampling_frequency)
                 magnitude_bandwidth = max(signal) - min(signal)

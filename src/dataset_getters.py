@@ -82,7 +82,7 @@ def get_set_name(letter):
     return "set_" + letter
 
 
-def map_label_to_string(label):
+def map_physionet_label_to_string(label):
     return "normal" if label == 1 else "abnormal"
 
 

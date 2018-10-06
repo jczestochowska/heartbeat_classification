@@ -7,7 +7,7 @@ from scipy.io import wavfile
 
 from config import PROJECT_ROOT_DIR
 from src.data_preparation import get_chunks, downsample_chunks, chunks_magnitude_normalization
-from src.dataset_getters import get_labels, get_label, map_label_to_string, get_kaggle_labels_path
+from src.dataset_getters import get_labels, get_label, map_physionet_label_to_string, get_kaggle_labels_path
 
 DESTINATION_DIR = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed')
 KAGGLE_DESTINATION_DIR = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'kaggle')
@@ -51,7 +51,8 @@ def preprocess_file(filename, source_dir, dataset, labels, destination_dir,
         dowsampled_chunks = downsample_chunks(chunks=chunks, new_sampling_rate=new_sampling_rate)
         normalized_chunks = chunks_magnitude_normalization(chunks=dowsampled_chunks)
         label = get_label(labels=labels, audio_filename=filename)
-        label = map_label_to_string(label)
+        if dataset == 'physionet':
+            label = map_physionet_label_to_string(label)
         for chunk in normalized_chunks:
             if label is not None:
                 new_filename = "{}_{}_{}{}".format(label, dataset, uuid.uuid4().hex, ".wav")
