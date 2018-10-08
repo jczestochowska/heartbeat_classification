@@ -2,7 +2,7 @@ import numpy as np
 import scipy
 from unittest import TestCase
 
-from src.data_preparation import get_chunks, downsample_chunks, chunks_magnitude_normalization
+from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
 from tests.test_signal_utils import TEST_FILEPATH
 
 

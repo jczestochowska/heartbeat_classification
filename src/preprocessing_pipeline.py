@@ -6,7 +6,7 @@ from multiprocessing.pool import Pool
 from scipy.io import wavfile
 
 from config import PROJECT_ROOT_DIR
-from src.data_preparation import get_chunks, downsample_chunks, chunks_magnitude_normalization
+from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
 from src.dataset_getters import get_labels, get_label, map_physionet_label_to_string, get_kaggle_labels_path
 
 DESTINATION_DIR = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed')
