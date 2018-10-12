@@ -5,7 +5,7 @@ from flask import Flask, request, render_template
 app = Flask(__name__, static_url_path='/static')
 ALLOWED_EXTENSIONS = ['wav']
 
-UPLOAD_FOLDER = '/home/jczestochowska/flask-test'
+from config import UPLOAD_FOLDER
 
 
 @app.route('/', methods=['GET', 'POST'])
