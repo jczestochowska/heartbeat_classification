@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, render_template
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 ALLOWED_EXTENSIONS = ['wav']
 
 UPLOAD_FOLDER = '/home/jczestochowska/flask-test'
