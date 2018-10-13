@@ -4,18 +4,31 @@ import shutil
 import tensorflow as tf
 
 from config import PROJECT_ROOT_DIR
-from models.logistic_regression import SUMMARIES_DIR
 
-TRAIN = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet', 'serialized', 'train.npy')
-TEST = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet', 'serialized', 'test.npy')
-TRAIN_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet', 'serialized',
-                            'train_labels.npy')
-TEST_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet', 'serialized',
-                           'test_labels.npy')
+SUMMARIES_DIR = os.path.join(PROJECT_ROOT_DIR, 'models', 'tensorboard_summaries')
+TRAIN = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                     'serialized', 'mfcc', 'train.npy')
+TEST = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                    'serialized', 'mfcc', 'test.npy')
+TRAIN_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                            'serialized', 'mfcc', 'train_labels.npy')
+TEST_LABELS = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                           'serialized', 'mfcc', 'test_labels.npy')
+TRAIN_RAW = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                         'serialized', 'no_feature_extraction', 'train.npy')
+TEST_RAW = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                        'serialized', 'no_feature_extraction', 'test.npy')
+TRAIN_LABELS_RAW = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet',
+                                'serialized', 'no_feature_extraction', 'train_labels.npy')
+TEST_LABELS_RAW = os.path.join(PROJECT_ROOT_DIR, 'data', 'processed', 'preprocessed', 'physionet', 'serialized',
+                               'no_feature_extraction', 'test_labels.npy')
 
 
-def load_dataset():
-    return np.load(TRAIN), np.load(TEST), np.load(TRAIN_LABELS), np.load(TEST_LABELS)
+def load_dataset(mfcc=True):
+    if mfcc:
+        return np.load(TRAIN), np.load(TEST), np.load(TRAIN_LABELS), np.load(TEST_LABELS)
+    else:
+        return np.load(TRAIN_RAW), np.load(TEST_RAW), np.load(TRAIN_LABELS_RAW), np.load(TEST_LABELS_RAW)
 
 
 def get_balanced_dataset(train_features, train_labels):
@@ -42,3 +55,10 @@ def delete_tensorboard_summaries():
     if os.path.exists(train_summary) and os.path.exists(test_summary):
         shutil.rmtree(train_summary)
         shutil.rmtree(test_summary)
+
+
+def create_balanced_dataset_batch(batch_size):
+    train_features, test_features, train_labels, test_labels = load_dataset(mfcc=False)
+    balanced_dataset = get_balanced_dataset(train_features, train_labels)
+    balanced_dataset = balanced_dataset.repeat().batch(batch_size)
+    return balanced_dataset, test_features, test_labels

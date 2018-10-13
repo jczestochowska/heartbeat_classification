@@ -1,10 +1,6 @@
-import os
 import tensorflow as tf
 
-from config import PROJECT_ROOT_DIR
-from models.dataset_utils import load_dataset, get_balanced_dataset, delete_tensorboard_summaries
-
-SUMMARIES_DIR = os.path.join(PROJECT_ROOT_DIR, 'models', 'tensorboard_summaries')
+from models.dataset_utils import load_dataset, get_balanced_dataset, delete_tensorboard_summaries, SUMMARIES_DIR
 
 
 def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0.1):
@@ -47,8 +43,8 @@ def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0
                                                       name="recall")
     tf.summary.scalar('cross_entropy', cross_entropy)
     tf.summary.scalar('accuracy', accuracy)
-    tf.summary.scalar('precision', precision)
-    tf.summary.scalar('recall', recall)
+    tf.summary.scalar('precision', precision_update)
+    tf.summary.scalar('recall', recall_update)
 
     merged = tf.summary.merge_all()
     train_writer = tf.summary.FileWriter(SUMMARIES_DIR + '/train',
@@ -68,4 +64,4 @@ def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0
 
 if __name__ == '__main__':
     delete_tensorboard_summaries()
-    logistic_regression_training(num_epochs=5000, batch_size=20, training_step=0.1)
+    logistic_regression_training(num_epochs=5000, batch_size=50, training_step=0.2)

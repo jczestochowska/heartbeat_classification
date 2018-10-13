@@ -16,7 +16,7 @@ def get_chunks(chunk_length, signal, sampling_rate, audio_length):
             range(chunks_number)]
 
 
-def downsample_chunks(chunks, new_sampling_rate=2000):
+def downsample_chunks(chunks, new_sampling_rate=4000):
     return [resample(chunk, new_sampling_rate) for chunk in chunks]
 
 
