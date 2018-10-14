@@ -1,6 +1,7 @@
 import numpy as np
 import os
 from flask import Flask, request, render_template
+from keras import backend
 from keras.engine.saving import load_model
 
 from src.prepare_report import map_prediction_to_string, preprocess_uploaded_file
@@ -16,7 +17,7 @@ def upload_file():
     if request.method == 'POST':
         file = request.files['file']
         file.save(os.path.join(UPLOAD_FOLDER, file.filename))
-    return render_template('home.html')
+    return render_template('index.html')
 
 
 @app.route('/predict', methods=['GET', 'POST'])
@@ -30,6 +31,7 @@ def predict():
     else:
         prediction = int(round(prediction))
     prediction = map_prediction_to_string(prediction)
+    backend.clear_session()
     return render_template('prediction.html', prediction=prediction)
 
 

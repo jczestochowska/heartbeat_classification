@@ -3,7 +3,6 @@ import os
 import plotly
 from plotly import graph_objs as go, tools as tls
 from scipy import signal
-from scipy.fftpack import fft
 from scipy.io import wavfile
 
 from config import UPLOAD_FOLDER
@@ -34,6 +33,7 @@ def save_plotly_report_to_html(audio, sampling_rate):
     html_snippet1 = get_plotly_spectrogram(audio, sampling_rate)
     with open('./templates/report.html', 'w') as file:
         file.write(html_snippet)
+        file.write('\n')
         file.write(html_snippet1)
         file.close()
 
@@ -42,8 +42,8 @@ def get_plotly_signal(audio):
     x = np.linspace(0, 1, len(audio))
     layout = go.Layout(
         title='Your heartbeat signal',
-        yaxis=dict(title='Sample'),  # x-axis label
-        xaxis=dict(title='Magnitude'),  # y-axis label
+        yaxis=dict(title='Magnitude'),  # x-axis label
+        xaxis=dict(title='Sample'),  # y-axis label
     )
     data = [go.Scatter(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
@@ -53,7 +53,7 @@ def get_plotly_signal(audio):
 
 def get_plotly_spectrogram(audio, sampling_rate):
     audio = np.array(audio)
-    freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate, nperseg=len(fft(audio)))
+    freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate)
 
     trace = [go.Heatmap(
         x=bins,
