@@ -3,3 +3,5 @@
 __pycache__/
 data/
 tests/tmp/
+models/tensorboard_summaries
+models/convo_weights.h5
