@@ -67,7 +67,7 @@ if __name__ == '__main__':
     model.compile(optimizer=Adam(learning_rate), loss='categorical_crossentropy',
                   metrics=['accuracy', keras_metrics.precision(), keras_metrics.recall()])
     weight_saver = ModelCheckpoint('convo_weights.h5', monitor='val_loss',
-                                   save_best_only=True, save_weights_only=True)
+                                   save_best_only=True, save_weights_only=False)
 
     tensorboard = callbacks.TensorBoard(log_dir='./tensorboard_summaries', histogram_freq=0, batch_size=1,
                                         write_graph=True,
