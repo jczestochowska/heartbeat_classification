@@ -46,10 +46,9 @@ def preprocess_file(filename, source_dir, dataset, labels, destination_dir,
     audio_length = len(signal) // sampling_rate
     signal = signal.tolist()
     if audio_length >= chunk_length:
-        chunks = get_chunks(audio_length=audio_length, chunk_length=chunk_length,
-                            signal=signal, sampling_rate=sampling_rate)
-        if dataset == 'kaggle':
-            chunks = downsample_chunks(chunks=chunks, new_sampling_rate=new_sampling_rate)
+        chunks = get_chunks(audio_length=audio_length, signal=signal, sampling_rate=sampling_rate,
+                            chunk_length=chunk_length)
+        chunks = downsample_chunks(chunks=chunks, chunk_length=chunk_length, new_sampling_rate=new_sampling_rate)
         normalized_chunks = chunks_magnitude_normalization(chunks=chunks)
         label = get_label(labels=labels, audio_filename=filename)
         if dataset == 'physionet':

@@ -13,7 +13,7 @@ class TestSubsampling(TestCase):
         # when
         fs, signal = scipy.io.wavfile.read(TEST_FILEPATH)
         signal = signal.tolist()
-        actual = get_chunks(chunk_length, signal, fs, len(signal) // fs)
+        actual = get_chunks(len(signal) // fs, signal, fs, chunk_length)
         # then
         actual = all(element == chunk_length * fs for element in list(map(len, actual)))
         self.assertTrue(actual)
@@ -26,13 +26,13 @@ class TestSubsampling(TestCase):
         chunk_length = 5
         chunks_number = round(audio_length / chunk_length)
         # when
-        actual = get_chunks(chunk_length=chunk_length, signal=signal, sampling_rate=fs, audio_length=audio_length)
+        actual = get_chunks(audio_length=audio_length, signal=signal, sampling_rate=fs, chunk_length=chunk_length)
         # then
         self.assertEqual(len(actual), chunks_number)
 
     def test_downsample_chunks(self):
         data = [np.linspace(0, 100, 3000), np.linspace(0, 100, 3000)]
-        actual = downsample_chunks(data)
+        actual = downsample_chunks(data, 5)
         expected = 2000
         actual = all(element == expected for element in list(map(len, actual)))
         self.assertTrue(actual)
