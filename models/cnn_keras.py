@@ -34,6 +34,7 @@ def get_keras_cnn(convo_input_shape):
     model.add(Conv1D(filters=10, kernel_size=10, activation='relu',
                      kernel_regularizer=l2(0.1)))
     model.add(MaxPool1D(strides=5))
+    model.add(Conv1D(filters=64, kernel_size=10))
     model.add(BatchNormalization())
     model.add(GlobalMaxPool1D())
     model.add(Dense(64, activation='sigmoid'))
