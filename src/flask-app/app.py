@@ -22,18 +22,19 @@ def upload_file():
 
 @app.route('/predict', methods=['GET', 'POST'])
 def predict():
-    chunks = preprocess_uploaded_file()
-    model = load_model('convo_weights.h5')
-    predictions = model.predict(chunks)
-    prediction = np.mean(np.amax(predictions, axis=1))
-    if prediction == 0.5:
-        prediction = 1
-    else:
-        prediction = int(round(prediction))
-    prediction = map_prediction_to_string(prediction)
-    backend.clear_session()
+    if request.method == 'POST':
+        chunks = preprocess_uploaded_file()
+        model = load_model('convo_weights.h5')
+        predictions = model.predict(chunks)
+        prediction = np.mean(np.amax(predictions, axis=1))
+        if prediction == 0.5:
+            prediction = 1
+        else:
+            prediction = int(round(prediction))
+        prediction = map_prediction_to_string(prediction)
+        backend.clear_session()
     return render_template('prediction.html', prediction=prediction)
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded=True)
