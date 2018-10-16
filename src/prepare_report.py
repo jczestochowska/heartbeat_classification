@@ -1,12 +1,22 @@
-import numpy as np
 import os
+
+import numpy as np
 import plotly
+import tensorflow as tf
+from keras.engine.saving import load_model
 from plotly import graph_objs as go, tools as tls
 from scipy import signal
 from scipy.io import wavfile
 
 from config import UPLOAD_FOLDER
 from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
+
+
+def _load_model():
+    global model
+    model = load_model('convo_weights.h5')
+    global graph
+    return tf.get_default_graph(), model
 
 
 def map_prediction_to_string(label):
