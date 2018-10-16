@@ -45,7 +45,7 @@ def get_plotly_signal(audio):
         yaxis=dict(title='Magnitude'),  # x-axis label
         xaxis=dict(title='Sample'),  # y-axis label
     )
-    data = [go.Scatter(x=x, y=audio)]
+    data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
     plotly_link = plotly.plotly.plot(fig, auto_open=False)
     return tls.get_embed(plotly_link)
