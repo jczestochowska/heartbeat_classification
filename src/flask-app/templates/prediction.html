@@ -5,78 +5,95 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 -->
 <html>
-<head>
-    <title>Heartbeat Classifier</title>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
-
-    <noscript>
-        <link rel="stylesheet" href="{{url_for('static', filename='css/noscript.css')}}"/>
-    </noscript>
-</head>
-<body class="index is-preload">
-<div id="page-wrapper">
-
-    <!-- Header -->
-    <header id="header" class="alt">
-        <h1 id="logo"><a href="index.html">Twenty <span>by HTML5 UP</span></a></h1>
-    </header>
-
-    <!-- Banner -->
-    <section id="banner">
-
-        <!--
-            ".inner" is set up as an inline-block so it automatically expands
-            in both directions to fit whatever's inside it. This means it won't
-            automatically wrap lines, so be sure to use line breaks where
-            appropriate (<br />).
-        -->
-        <div class="inner">
-            <header>
-                <h2>Heartbeat Classifier</h2>
-            </header>
-            <p>Model prediction: <br>
-                Your heartbeat is {{ prediction }}</p>
-        </div>
-
-    </section>
-
-    <!-- Main -->
-    <article id="main">
-
-        <header class="special container">
-            <span class="icon fa-heartbeat"></span>
-            <div>
-                {% include 'report.html' %}
-            </div>
-        </header>
-    </article>
+<div class="heartbeatloader">
+    <svg class="svgdraw" width="100%" height="100%" viewBox="0 0 150 400" xmlns="http://www.w3.org/2000/svg">
+        <path class="path"
+              d="M 0 200 l 40 0 l 5 -40 l 5 40 l 10 0 l 5 15 l 10 -140 l 10 220 l 5 -95 l 10 0 l 5 20 l 5 -20 l 30 0"
+              fill="transparent" stroke-width="4" stroke="black"/>
+    </svg>
+    <div class="innercircle"></div>
+    <div class="outercircle"></div>
 </div>
+<div id="content">
+    <head>
+        <script type="text/javascript">// <![CDATA[
+        function preloader() {
+            document.getElementById("heartbeatloader").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }//preloader
+        window.onload = preloader;</script>
+        <title>Heartbeat Classifier</title>
+        <meta charset="utf-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+        <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
 
-<footer id="footer">
+        <noscript>
+            <link rel="stylesheet" href="{{url_for('static', filename='css/noscript.css')}}"/>
+        </noscript>
+    </head>
+    <body class="index is-preload">
+    <div id="page-wrapper">
 
-    <ul class="icons">
-        <li><a href="http://github.com/jczestochowska/heartbeat_classification" class="icon circle fa-github"><span
-                class="label">Github</span></a></li>
-    </ul>
+        <!-- Header -->
+        <header id="header" class="alt">
+            <h1 id="logo"><a href="index.html">Twenty <span>by HTML5 UP</span></a></h1>
+        </header>
 
-    <ul class="copyright">
-        <li>&copy; Untitled</li>
-        <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
-    </ul>
+        <!-- Banner -->
+        <section id="banner">
 
-</footer>
+            <!--
+                ".inner" is set up as an inline-block so it automatically expands
+                in both directions to fit whatever's inside it. This means it won't
+                automatically wrap lines, so be sure to use line breaks where
+                appropriate (<br />).
+            -->
+            <div class="inner">
+                <header>
+                    <h2>Heartbeat Classifier</h2>
+                </header>
+                <p>Model prediction: <br>
+                    Your heartbeat is {{ prediction }}</p>
+            </div>
 
-<script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/jquery.dropotron.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/jquery.scrolly.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/jquery.scrollex.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/browser.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/breakpoints.min.js')}}"></script>
-<script src="{{url_for('static', filename='js/util.js')}}"></script>
-<script src="{{url_for('static', filename='js/main.js')}}"></script>
+        </section>
+
+        <!-- Main -->
+        <article id="main">
+
+            <header class="special container">
+                <span class="icon fa-heartbeat"></span>
+                <div>
+                    {% include 'report.html' %}
+                </div>
+            </header>
+        </article>
+    </div>
+
+    <footer id="footer">
+
+        <ul class="icons">
+            <li><a href="http://github.com/jczestochowska/heartbeat_classification" class="icon circle fa-github"><span
+                    class="label">Github</span></a></li>
+        </ul>
+
+        <ul class="copyright">
+            <li>&copy; Untitled</li>
+            <li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+        </ul>
+
+    </footer>
+
+    <script src="{{url_for('static', filename='js/jquery.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.dropotron.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.scrolly.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/jquery.scrollex.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/browser.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/breakpoints.min.js')}}"></script>
+    <script src="{{url_for('static', filename='js/util.js')}}"></script>
+    <script src="{{url_for('static', filename='js/main.js')}}"></script>
 
 
-</body>
+    </body>
+</div>
 </html>
