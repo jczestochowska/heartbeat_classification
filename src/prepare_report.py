@@ -36,21 +36,21 @@ def preprocess_uploaded_file():
     chunks = chunks_magnitude_normalization(chunks)
     chunks = np.array(chunks)
     save_plotly_report_to_html(audio, sampling_rate)
-    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1)
+    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath
 
 
 def save_plotly_report_to_html(audio, sampling_rate):
-    html_snippet = get_plotly_signal(audio)
-    html_snippet1 = get_plotly_spectrogram(audio, sampling_rate)
+    signal_plot_html_snippet, signal_plot_link = get_plotly_signal(audio)
+    spectrogram_html_snippet, spectrogram_plot_link = get_plotly_spectrogram(audio, sampling_rate)
     with open('./templates/report.html', 'w') as file:
-        file.write(html_snippet)
+        file.write(signal_plot_html_snippet)
         file.write('\n')
-        file.write(html_snippet1)
+        file.write(spectrogram_html_snippet)
         file.close()
 
 
 def get_plotly_signal(audio):
-    audio = scipy.signal.decimate(audio, 5)
+    audio = scipy.signal.decimate(audio, 6)
     x = np.linspace(0, len(audio), len(audio))
     layout = go.Layout(
         title='Your heartbeat signal',
@@ -60,7 +60,7 @@ def get_plotly_signal(audio):
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
     plotly_link = plotly.plotly.plot(fig, auto_open=False)
-    return tls.get_embed(plotly_link)
+    return tls.get_embed(plotly_link), plotly_link
 
 
 def get_plotly_spectrogram(audio, sampling_rate):
@@ -81,4 +81,4 @@ def get_plotly_spectrogram(audio, sampling_rate):
     )
     fig = go.Figure(data=trace, layout=layout)
     plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
-    return tls.get_embed(plotly_link)
+    return tls.get_embed(plotly_link), plotly_link

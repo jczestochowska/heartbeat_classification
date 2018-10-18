@@ -38,10 +38,10 @@
             </header>
             <p>This is your <strong>heartbeat classifier</strong>, <br> please upload your heartbeat audio
             <div class="upload">
-                <form method=post enctype=multipart/form-data action="http://localhost:5000/predict">
+                <form method=post enctype=multipart/form-data>
                     <div class="upload-btn-wrapper">
                         <button class="button">Upload file</button>
-                        <input type="file" onchange="form.submit()"/>
+                        <input name='file' type="file" onchange="form.submit()"/>
                     </div>
                 </form>
             </div>
