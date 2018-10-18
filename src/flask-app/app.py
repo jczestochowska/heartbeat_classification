@@ -1,7 +1,7 @@
 import os
 
 import numpy as np
-from flask import Flask, request, render_template, url_for, after_this_request
+from flask import Flask, flash, request, render_template, url_for, after_this_request
 from plotly import plotly
 from werkzeug.utils import redirect
 
@@ -11,7 +11,7 @@ PLOTLY_API_KEY = api_key = 'CzDrbDVsUbaHOC8eBV3d'
 PLOTLY_USERNAME = username = 'j.czestochowska'
 
 app = Flask(__name__, static_url_path='/static')
-ALLOWED_EXTENSIONS = ['wav']
+ALLOWED_EXTENSION = 'wav'
 GRAPH, MODEL = _load_model()
 
 from config import UPLOAD_FOLDER
@@ -20,6 +20,16 @@ from config import UPLOAD_FOLDER
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('Somethin is wrong I cannot find file part')
+            return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+            flash('No selected file')
+            return redirect(request.url)
+        if not file.filename.endswith(ALLOWED_EXTENSION):
+            flash('Please upload a .wav file')
+            return redirect(request.url)
         file = request.files['file']
         file.save(os.path.join(UPLOAD_FOLDER, file.filename))
         return redirect(url_for('predict'))
@@ -46,4 +56,6 @@ def predict():
 
 if __name__ == '__main__':
     plotly.plotly.tools.set_credentials_file(PLOTLY_USERNAME, PLOTLY_API_KEY)
+    app.secret_key = 'super secret key'
+    app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True)
