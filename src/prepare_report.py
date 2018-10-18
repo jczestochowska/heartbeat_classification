@@ -2,6 +2,7 @@ import os
 
 import numpy as np
 import plotly
+import scipy
 import tensorflow as tf
 from keras.engine.saving import load_model
 from plotly import graph_objs as go, tools as tls
@@ -49,7 +50,8 @@ def save_plotly_report_to_html(audio, sampling_rate):
 
 
 def get_plotly_signal(audio):
-    x = np.linspace(0, 1, len(audio))
+    audio = scipy.signal.decimate(audio, 5)
+    x = np.linspace(0, len(audio), len(audio))
     layout = go.Layout(
         title='Your heartbeat signal',
         yaxis=dict(title='Magnitude'),  # x-axis label
@@ -62,6 +64,7 @@ def get_plotly_signal(audio):
 
 
 def get_plotly_spectrogram(audio, sampling_rate):
+    audio = scipy.signal.decimate(audio, 2)
     audio = np.array(audio)
     freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate)
 
