@@ -1,9 +1,9 @@
+import math
+
 import numpy as np
 import sklearn
-
 from lime import explanation
 from lime import lime_base
-import math
 
 
 class LimeTimeSeriesExplanation(object):
@@ -27,7 +27,7 @@ class LimeTimeSeriesExplanation(object):
         """
 
         # exponential kernel
-        def kernel(d): return np.sqrt(np.exp(-(d ** 2) / kernel_width ** 2))
+        def kernel(d): return np.squeeze(np.sqrt(np.exp(-(d ** 2) / kernel_width ** 2)))
 
         self.base = lime_base.LimeBase(kernel, verbose)
         self.class_names = class_names
@@ -38,7 +38,7 @@ class LimeTimeSeriesExplanation(object):
                          classifier_fn,
                          training_set,
                          num_slices,
-                         labels=(1,),
+                         labels=(1, 0),
                          top_labels=None,
                          num_features=10,
                          num_samples=5000,
@@ -72,12 +72,12 @@ class LimeTimeSeriesExplanation(object):
             self.class_names = [str(x) for x in range(yss[0].shape[0])]
         ret_exp = explanation.Explanation(domain_mapper=domain_mapper, class_names=self.class_names)
         ret_exp.predict_proba = yss[0]
+        print("Explaining")
+        explained = []
         for label in labels:
-            (ret_exp.intercept[label],
-             ret_exp.local_exp[label],
-             ret_exp.score) = self.base.explain_instance_with_data(data, yss, distances, label, num_features,
-                                                                   feature_selection=self.feature_selection)
-        return ret_exp
+            explained.append(self.base.explain_instance_with_data(data, yss, distances, label, num_features,
+                                                                  feature_selection=self.feature_selection))
+        return explained
 
     @classmethod
     def __data_labels_distances(cls,
@@ -113,8 +113,9 @@ class LimeTimeSeriesExplanation(object):
         """
 
         def distance_fn(x):
-            return sklearn.metrics.pairwise.pairwise_distances(
-                x, metric='cosine').ravel() * 100
+            original_point = x[0, :].reshape(1, -1)
+            distances = sklearn.metrics.pairwise_distances(x, original_point)
+            return distances * 100
 
         # split time_series into slices
         values_per_slice = math.ceil(len(time_series) / num_slices)
@@ -126,27 +127,18 @@ class LimeTimeSeriesExplanation(object):
         inverse_data = [time_series.copy()]
 
         for i, size in enumerate(sample, start=1):
+            if i % 100 == 0:
+                print("Now processing {} feature from timeseries".format(i))
             inactive = np.random.choice(features_range, size, replace=False)
             # set inactive slice to mean of training_set
             data[i, inactive] = 0
             tmp_series = time_series.copy()
-
             for i, inact in enumerate(inactive, start=1):
                 index = inact * values_per_slice
-                if replacement_method == 'mean':
-                    # use mean as inactive
-                    tmp_series.ix[index:(index + values_per_slice)] = np.mean(
-                        training_set.ix[:, index:(index + values_per_slice)].mean())
-                elif replacement_method == 'noise':
-                    # use random noise as inactive
-                    tmp_series.ix[index:(index + values_per_slice)] = np.random.uniform(min(training_set.min()),
-                                                                                        max(training_set.max()), len(
-                            tmp_series.ix[index:(index + values_per_slice)]))
-                elif replacement_method == 'total_mean':
-                    # use total mean as inactive
-                    tmp_series.ix[index:(index + values_per_slice)] = np.mean(training_set.mean())
+                # use mean as inactive
+                tmp_series[index:(index + values_per_slice)] = np.mean(
+                    training_set[:, index:(index + values_per_slice)])
             inverse_data.append(tmp_series)
-        inverse_data = np.array([data.values for data in inverse_data])[:, :, np.newaxis]
         labels = classifier_fn(inverse_data)
         distances = distance_fn(data)
         return data, labels, distances
