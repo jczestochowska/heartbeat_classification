@@ -1,18 +1,16 @@
+import asyncio
 import os
-
-import numpy as np
 from flask import Flask, flash, request, render_template, url_for, after_this_request
 from plotly import plotly
 from werkzeug.utils import redirect
 
-from src.prepare_report import map_prediction_to_string, preprocess_uploaded_file, _load_model
+from src.prepare_report import preprocess_uploaded_file, save_plotly_report_to_html, get_prediction
 
 PLOTLY_API_KEY = api_key = 'CzDrbDVsUbaHOC8eBV3d'
 PLOTLY_USERNAME = username = 'j.czestochowska'
 
 app = Flask(__name__, static_url_path='/static')
 ALLOWED_EXTENSION = 'wav'
-GRAPH, MODEL = _load_model()
 
 from config import UPLOAD_FOLDER
 
@@ -38,19 +36,21 @@ def index():
 
 @app.route('/predict', methods=['GET'])
 def predict():
-    chunks, filepath = preprocess_uploaded_file()
+    chunks, filepath, audio, sampling_rate = preprocess_uploaded_file()
 
+    loop = asyncio.get_event_loop()
+    tasks = [
+        get_prediction(chunks),
+        save_plotly_report_to_html(audio, sampling_rate)
+    ]
+    prediction, probability = loop.run_until_complete(asyncio.gather(*tasks))[0]
+
+    # save_plotly_report_to_html(audio, sampling_rate)
+    # prediction, probability = get_prediction(chunks)
     @after_this_request
     def delete_file(response):
         os.remove(filepath)
         return response
-
-    with GRAPH.as_default():
-        predictions = MODEL.predict(chunks)
-    probability = np.round(np.mean(np.amax(predictions, axis=1))*100, decimals=1)
-    prediction = np.mean(np.argmax(predictions, axis=1))
-    prediction = 1 if prediction >= 0.5 else 0
-    prediction = map_prediction_to_string(prediction)
     return render_template('prediction.html', prediction=prediction, probability=probability)
 
 

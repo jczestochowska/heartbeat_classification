@@ -1,6 +1,6 @@
-import os
-
+import asyncio
 import numpy as np
+import os
 import plotly
 import scipy
 import tensorflow as tf
@@ -35,11 +35,10 @@ def preprocess_uploaded_file():
     chunks = downsample_chunks(chunks, chunk_length, new_sampling_rate)
     chunks = chunks_magnitude_normalization(chunks)
     chunks = np.array(chunks)
-    save_plotly_report_to_html(audio, sampling_rate)
-    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath
+    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath, audio, sampling_rate
 
 
-def save_plotly_report_to_html(audio, sampling_rate):
+async def save_plotly_report_to_html(audio, sampling_rate):
     signal_plot_html_snippet, signal_plot_link = get_plotly_signal(audio)
     spectrogram_html_snippet, spectrogram_plot_link = get_plotly_spectrogram(audio, sampling_rate)
     with open('./templates/report.html', 'w') as file:
@@ -49,7 +48,7 @@ def save_plotly_report_to_html(audio, sampling_rate):
         file.close()
 
 
-def get_plotly_signal(audio):
+async def get_plotly_signal(audio):
     audio = scipy.signal.decimate(audio, 6)
     x = np.linspace(0, len(audio), len(audio))
     layout = go.Layout(
@@ -60,10 +59,11 @@ def get_plotly_signal(audio):
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
     plotly_link = plotly.plotly.plot(fig, auto_open=False)
+    await asyncio.wait(0.1)
     return tls.get_embed(plotly_link), plotly_link
 
 
-def get_plotly_spectrogram(audio, sampling_rate):
+async def get_plotly_spectrogram(audio, sampling_rate):
     audio = scipy.signal.decimate(audio, 2)
     audio = np.array(audio)
     freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate)
@@ -81,4 +81,17 @@ def get_plotly_spectrogram(audio, sampling_rate):
     )
     fig = go.Figure(data=trace, layout=layout)
     plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
+    await asyncio.wait(0.1)
     return tls.get_embed(plotly_link), plotly_link
+
+
+async def get_prediction(chunks):
+    GRAPH, MODEL = _load_model()
+    with GRAPH.as_default():
+        predictions = MODEL.predict(chunks)
+        await asyncio.wait(0.1)
+    probability = np.round(np.mean(np.amax(predictions, axis=1)) * 100, decimals=1)
+    prediction = np.mean(np.argmax(predictions, axis=1))
+    prediction = 1 if prediction >= 0.5 else 0
+    prediction = map_prediction_to_string(prediction)
+    return prediction, probability
