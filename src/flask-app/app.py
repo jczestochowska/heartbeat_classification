@@ -1,5 +1,5 @@
-import asyncio
 import os
+import threading
 from flask import Flask, flash, request, render_template, url_for, after_this_request
 from plotly import plotly
 from werkzeug.utils import redirect
@@ -37,16 +37,10 @@ def index():
 @app.route('/predict', methods=['GET'])
 def predict():
     chunks, filepath, audio, sampling_rate = preprocess_uploaded_file()
+    plotly_thread = threading.Thread(target=save_plotly_report_to_html, args=(audio, sampling_rate))
+    plotly_thread.start()
+    prediction, probability = get_prediction(chunks)
 
-    loop = asyncio.get_event_loop()
-    tasks = [
-        get_prediction(chunks),
-        save_plotly_report_to_html(audio, sampling_rate)
-    ]
-    prediction, probability = loop.run_until_complete(asyncio.gather(*tasks))[0]
-
-    # save_plotly_report_to_html(audio, sampling_rate)
-    # prediction, probability = get_prediction(chunks)
     @after_this_request
     def delete_file(response):
         os.remove(filepath)

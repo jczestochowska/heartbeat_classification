@@ -1,4 +1,3 @@
-import asyncio
 import numpy as np
 import os
 import plotly
@@ -25,7 +24,7 @@ def map_prediction_to_string(label):
 
 
 def preprocess_uploaded_file():
-    filepath = os.path.join(UPLOAD_FOLDER, os.listdir(UPLOAD_FOLDER)[0])
+    filepath = os.path.join(UPLOAD_FOLDER, os.listdir(UPLOAD_FOLDER)[1])
     sampling_rate, audio = wavfile.read(filepath)
     audio = list(audio)
     audio_length = len(audio) // sampling_rate
@@ -38,7 +37,7 @@ def preprocess_uploaded_file():
     return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath, audio, sampling_rate
 
 
-async def save_plotly_report_to_html(audio, sampling_rate):
+def save_plotly_report_to_html(audio, sampling_rate):
     signal_plot_html_snippet, signal_plot_link = get_plotly_signal(audio)
     spectrogram_html_snippet, spectrogram_plot_link = get_plotly_spectrogram(audio, sampling_rate)
     with open('./templates/report.html', 'w') as file:
@@ -48,7 +47,7 @@ async def save_plotly_report_to_html(audio, sampling_rate):
         file.close()
 
 
-async def get_plotly_signal(audio):
+def get_plotly_signal(audio):
     audio = scipy.signal.decimate(audio, 6)
     x = np.linspace(0, len(audio), len(audio))
     layout = go.Layout(
@@ -59,11 +58,10 @@ async def get_plotly_signal(audio):
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
     plotly_link = plotly.plotly.plot(fig, auto_open=False)
-    await asyncio.wait(0.1)
     return tls.get_embed(plotly_link), plotly_link
 
 
-async def get_plotly_spectrogram(audio, sampling_rate):
+def get_plotly_spectrogram(audio, sampling_rate):
     audio = scipy.signal.decimate(audio, 2)
     audio = np.array(audio)
     freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate)
@@ -81,15 +79,13 @@ async def get_plotly_spectrogram(audio, sampling_rate):
     )
     fig = go.Figure(data=trace, layout=layout)
     plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
-    await asyncio.wait(0.1)
     return tls.get_embed(plotly_link), plotly_link
 
 
-async def get_prediction(chunks):
+def get_prediction(chunks):
     GRAPH, MODEL = _load_model()
     with GRAPH.as_default():
         predictions = MODEL.predict(chunks)
-        await asyncio.wait(0.1)
     probability = np.round(np.mean(np.amax(predictions, axis=1)) * 100, decimals=1)
     prediction = np.mean(np.argmax(predictions, axis=1))
     prediction = 1 if prediction >= 0.5 else 0
