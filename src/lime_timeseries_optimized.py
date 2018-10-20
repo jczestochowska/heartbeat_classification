@@ -70,14 +70,14 @@ class LimeTimeSeriesExplanation(object):
                                                             training_set, replacement_method)
         if self.class_names is None:
             self.class_names = [str(x) for x in range(yss[0].shape[0])]
-        ret_exp = explanation.Explanation(domain_mapper=domain_mapper, class_names=self.class_names)
-        ret_exp.predict_proba = yss[0]
+        explanation_ = explanation.Explanation(domain_mapper=domain_mapper, class_names=self.class_names)
+        explanation_.predict_proba = yss[0]
         print("Explaining")
-        explained = []
+        explanations = []
         for label in labels:
-            explained.append(self.base.explain_instance_with_data(data, yss, distances, label, num_features,
-                                                                  feature_selection=self.feature_selection))
-        return explained
+            explanations.append(self.base.explain_instance_with_data(data, yss, distances, label, num_features,
+                                                                     feature_selection=self.feature_selection))
+        return explanations
 
     @classmethod
     def __data_labels_distances(cls,
