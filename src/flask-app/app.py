@@ -54,11 +54,12 @@ def get_lime_explanation(instance, num_features=20, num_slices=30, num_samples=1
     training_set = np.load('train.npy')
     explainer = LimeTimeSeriesExplanation(feature_selection='auto', verbose=False)
     explanations = explainer.explain_instance(timeseries=instance, num_features=num_features, training_set=training_set,
-                                              num_samples=num_samples, num_slices=num_slices, classifier_fn=predict)
+                                              num_samples=num_samples, num_slices=num_slices,
+                                              classifier_fn=lime_predict)
     return explanations
 
 
-def predict(instances):
+def lime_predict(instances):
     labels = []
     for instance in instances:
         instance = np.reshape(instance, newshape=(1, instance.shape[0], 1))
