@@ -4,7 +4,7 @@ from flask import Flask, flash, request, render_template, url_for, after_this_re
 from plotly import plotly
 from werkzeug.utils import redirect
 
-from src.prepare_report import preprocess_uploaded_file, save_plotly_report_to_html, get_prediction
+from prepare_report import preprocess_uploaded_file, save_plotly_report_to_html, get_prediction
 
 PLOTLY_API_KEY = api_key = 'CzDrbDVsUbaHOC8eBV3d'
 PLOTLY_USERNAME = username = 'j.czestochowska'
