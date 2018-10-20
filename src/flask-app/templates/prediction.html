@@ -45,9 +45,11 @@
 
         <!-- Main -->
         <article id="main">
-
             <header class="special container">
                 <span class="icon fa-heartbeat"></span>
+                <div id="lime">
+                    <img src="{{url_for('static', filename='LIMEPLOT.svg')}}">
+                </div>
                 <div>
                     {% include 'report.html' %}
                 </div>

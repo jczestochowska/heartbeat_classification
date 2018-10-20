@@ -1,3 +1,5 @@
+import math
+
 import numpy as np
 import os
 import plotly
@@ -71,6 +73,33 @@ def get_plotly_spectrogram(audio, sampling_rate):
     fig = go.Figure(data=trace, layout=layout)
     plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
     return tls.get_embed(plotly_link), plotly_link
+
+
+def plot_lime_explanation(explanations, instance, num_slices=40):
+    exp = explanations[0][1]
+    trace = go.Scatter(
+        x=np.arange(0, 10000, 1),
+        y=instance,
+        mode='lines',
+    )
+    data = [trace]
+    layout = {'title': 'Explanation of classifier decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
+              'yaxis': {'title': 'Magnitude', 'showgrid': False}, 'shapes': []}
+    shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
+             'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
+    values_per_slice = math.ceil(len(instance) / num_slices)
+    weights = [abs(sample[1]) for sample in exp]
+    normalized_weights = [(weight - min(weights)) / (max(weights) - min(weights)) for weight in weights]
+    for i in range(len(exp)):
+        feature, _ = exp[i]
+        weight = normalized_weights[i]
+        start = feature * values_per_slice
+        end = start + values_per_slice
+        shape1 = shape.copy()
+        shape1.update({'x0': start, 'x1': end, 'opacity': weight})
+        layout['shapes'].append(shape1)
+    lime_plot_link = plotly.plotly.plot({'data': data, 'layout': layout}, filename='timestamp-highlight')
+    return tls.get_embed(lime_plot_link)
 
 
 def get_prediction(chunks, model, graph):
