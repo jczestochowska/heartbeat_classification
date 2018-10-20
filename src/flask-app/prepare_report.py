@@ -2,21 +2,12 @@ import numpy as np
 import os
 import plotly
 import scipy
-import tensorflow as tf
-from keras.engine.saving import load_model
 from plotly import graph_objs as go, tools as tls
 from scipy import signal
 from scipy.io import wavfile
 
 from config import UPLOAD_FOLDER
 from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
-
-
-def _load_model():
-    global model
-    model = load_model('convo_weights.h5')
-    global graph
-    return tf.get_default_graph(), model
 
 
 def map_prediction_to_string(label):
@@ -82,10 +73,9 @@ def get_plotly_spectrogram(audio, sampling_rate):
     return tls.get_embed(plotly_link), plotly_link
 
 
-def get_prediction(chunks):
-    GRAPH, MODEL = _load_model()
-    with GRAPH.as_default():
-        predictions = MODEL.predict(chunks)
+def get_prediction(chunks, model, graph):
+    with graph.as_default():
+        predictions = model.predict(chunks)
     probability = np.round(np.mean(np.amax(predictions, axis=1)) * 100, decimals=1)
     prediction = np.mean(np.argmax(predictions, axis=1))
     prediction = 1 if prediction >= 0.5 else 0

@@ -1,10 +1,12 @@
 import os
+import tensorflow as tf
 import threading
 from flask import Flask, flash, request, render_template, url_for, after_this_request
+from keras.engine.saving import load_model
 from plotly import plotly
 from werkzeug.utils import redirect
 
-from prepare_report import preprocess_uploaded_file, save_plotly_report_to_html, get_prediction
+from prepare_report import preprocess_uploaded_file, get_prediction, save_plotly_report_to_html
 
 PLOTLY_API_KEY = api_key = 'CzDrbDVsUbaHOC8eBV3d'
 PLOTLY_USERNAME = username = 'j.czestochowska'
@@ -39,17 +41,26 @@ def predict():
     chunks, filepath, audio, sampling_rate = preprocess_uploaded_file()
     plotly_thread = threading.Thread(target=save_plotly_report_to_html, args=(audio, sampling_rate))
     plotly_thread.start()
-    prediction, probability = get_prediction(chunks)
+    prediction, probability = get_prediction(chunks, MODEL, GRAPH)
 
     @after_this_request
     def delete_file(response):
         os.remove(filepath)
         return response
+
     return render_template('prediction.html', prediction=prediction, probability=probability)
+
+
+def _load_model():
+    global MODEL
+    MODEL = load_model('convo_weights.h5')
+    global GRAPH
+    GRAPH = tf.get_default_graph()
 
 
 if __name__ == '__main__':
     plotly.plotly.tools.set_credentials_file(PLOTLY_USERNAME, PLOTLY_API_KEY)
+    _load_model()
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True)
