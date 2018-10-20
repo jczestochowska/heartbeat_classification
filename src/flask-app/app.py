@@ -22,6 +22,11 @@ ALLOWED_EXTENSION = 'wav'
 from config import UPLOAD_FOLDER
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('not_found.html')
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':

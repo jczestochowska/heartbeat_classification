@@ -1,4 +1,3 @@
-import keras_metrics
 import numpy as np
 from keras import callbacks
 from keras.callbacks import ModelCheckpoint
@@ -66,7 +65,7 @@ if __name__ == '__main__':
     convo_input_shape = train_features.shape[1:]
     model = get_keras_cnn(convo_input_shape)
     model.compile(optimizer=Adam(learning_rate), loss='categorical_crossentropy',
-                  metrics=['accuracy', keras_metrics.precision(), keras_metrics.recall()])
+                  metrics=['accuracy'])
     weight_saver = ModelCheckpoint('convo_weights.h5', monitor='val_loss',
                                    save_best_only=True, save_weights_only=False)
 
