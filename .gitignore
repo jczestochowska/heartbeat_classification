@@ -6,3 +6,4 @@ tests/tmp/
 models/tensorboard_summaries
 models/convo_weights.h5
 src/flask-app/templates/report.html
+src/flask-app/train.npy
