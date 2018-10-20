@@ -3,14 +3,15 @@ import time
 import numpy as np
 import os
 import tensorflow as tf
-from flask import Flask, request, render_template, url_for, after_this_request
+from flask import Flask, request, render_template, url_for, after_this_request, flash, session
 from keras.engine.saving import load_model
 from multiprocessing.pool import ThreadPool
 from plotly import plotly
+from scipy.io import wavfile
 from werkzeug.utils import redirect
 
-from prepare_report import preprocess_uploaded_file, get_prediction, plot_lime_explanation, \
-    get_plotly_signal, get_plotly_spectrogram
+from prepare_report import preprocess_uploaded_file, get_prediction, get_plotly_signal, get_plotly_spectrogram, \
+    plot_lime_explanation
 from src.lime_timeseries_optimized import LimeTimeSeriesExplanation
 
 PLOTLY_API_KEY = api_key = 'CzDrbDVsUbaHOC8eBV3d'
@@ -27,11 +28,33 @@ def page_not_found(e):
     return render_template('not_found.html')
 
 
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template(internal_server_error.html), 500
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('No file part')
+            return render_template("index.html")
         file = request.files['file']
+        if not file.filename.endswith('.wav'):
+            flash("Please upload a .wav file")
+            return render_template("index.html")
         file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+        filepath = os.path.join(UPLOAD_FOLDER, file.filename)
+        session['filepath'] = filepath
+        global AUDIO
+        global SAMPLING_RATE
+        SAMPLING_RATE, AUDIO = wavfile.read(filepath)
+        AUDIO = list(AUDIO)
+        global AUDIO_LENGTH
+        AUDIO_LENGTH = len(AUDIO) // SAMPLING_RATE
+        if AUDIO_LENGTH < 5:
+            flash("Please upload audio that lasts at least 5 seconds")
+            return render_template("index.html")
         return redirect(url_for('predict'))
     return render_template("index.html")
 
@@ -39,16 +62,18 @@ def index():
 @app.route('/predict', methods=['GET'])
 def predict():
     start = time.time()
-    chunks, filepath, audio, sampling_rate = preprocess_uploaded_file()
-    chunks_for_lime = np.squeeze(chunks)
-
+    filepath = session.get('filepath')
+    chunks = preprocess_uploaded_file(AUDIO, SAMPLING_RATE, AUDIO_LENGTH)
+    chunks_for_lime = chunks
+    if chunks.shape[0] > 1:
+        chunks_for_lime = np.squeeze(chunks)
     signal_thread = ThreadPool(processes=1)
     spectrogram_thread = ThreadPool(processes=1)
-    lime_thread = ThreadPool(processes=10)
+    lime_thread = ThreadPool(processes=25)
 
     lime_pool_result = lime_thread.map_async(get_lime_explanation, chunks_for_lime)
-    signal_pool_result = signal_thread.apply_async(get_plotly_signal, args=([audio]))
-    spectrogram_pool_result = spectrogram_thread.apply_async(get_plotly_spectrogram, args=(audio, sampling_rate))
+    signal_pool_result = signal_thread.apply_async(get_plotly_signal, args=([AUDIO]))
+    spectrogram_pool_result = spectrogram_thread.apply_async(get_plotly_spectrogram, args=(AUDIO, SAMPLING_RATE))
 
     prediction, probability = get_prediction(chunks, MODEL, GRAPH)
 

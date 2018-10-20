@@ -1,14 +1,12 @@
 import math
 
 import numpy as np
-import os
 import plotly
 import scipy
-from plotly import graph_objs as go, tools as tls
+from plotly import graph_objs as go
+from plotly import tools as tls
 from scipy import signal
-from scipy.io import wavfile
 
-from config import UPLOAD_FOLDER
 from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
 
 
@@ -16,18 +14,14 @@ def map_prediction_to_string(label):
     return "abnormal" if label == 1 else "normal"
 
 
-def preprocess_uploaded_file():
-    filepath = os.path.join(UPLOAD_FOLDER, os.listdir(UPLOAD_FOLDER)[1])
-    sampling_rate, audio = wavfile.read(filepath)
-    audio = list(audio)
-    audio_length = len(audio) // sampling_rate
+def preprocess_uploaded_file(audio, sampling_rate, audio_length):
     chunk_length = 5
     new_sampling_rate = 2000
     chunks = get_chunks(audio_length, audio, sampling_rate, chunk_length)
     chunks = downsample_chunks(chunks, chunk_length, new_sampling_rate)
     chunks = chunks_magnitude_normalization(chunks)
     chunks = np.array(chunks)
-    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath, audio, sampling_rate
+    return chunks.reshape(chunks.shape[0], chunks.shape[1], 1)
 
 
 def get_plotly_signal(audio):

@@ -7,25 +7,17 @@
 <html>
 <head>
     <link rel="shortcut icon" href="{{url_for('static', filename='css/images/tab_icon.png')}}">
-    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
     <title>Heartbeat Classifier</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/main.css')}}"/>
+
     <noscript>
         <link rel="stylesheet" href="assets/css/noscript.css"/>
     </noscript>
 </head>
 
 <body class="index is-preload">
-
-<div>
-    {% for message in get_flashed_messages() %}
-    <div id="flash-message" class="alert">
-        <script>alert("{{message}}");</script>
-    </div>
-    {% endfor %}
-</div>
-
 <div id="page-wrapper">
 
     <!-- Header -->
@@ -46,15 +38,7 @@
             <header>
                 <h2>Heartbeat Classifier</h2>
             </header>
-            <p>This is your <strong>heartbeat classifier</strong>, <br> please upload your heartbeat audio
-            <div class="upload">
-                <form method=post enctype=multipart/form-data>
-                    <div class="upload-btn-wrapper">
-                        <button class="button">Upload file</button>
-                        <input name='file' type="file" onchange="form.submit()"/>
-                    </div>
-                </form>
-            </div>
+            <p>Internal server error<br> Unexpected error occur, please try again or contact administrator
         </div>
 
     </section>
@@ -79,7 +63,8 @@
 
         <ul class="icons">
             <li><a href="http://github.com/jczestochowska/heartbeat_classification" class="icon circle fa-github"><span
-                    class="label">Github</span></a></li></ul>
+                    class="label">Github</span></a></li>
+        </ul>
 
         <ul class="copyright">
             <li>&copy; Untitled</li>
