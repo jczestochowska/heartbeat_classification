@@ -30,16 +30,6 @@ def preprocess_uploaded_file():
     return chunks.reshape(chunks.shape[0], chunks.shape[1], 1), filepath, audio, sampling_rate
 
 
-def save_plotly_report_to_html(audio, sampling_rate):
-    signal_plot_html_snippet, signal_plot_link = get_plotly_signal(audio)
-    spectrogram_html_snippet, spectrogram_plot_link = get_plotly_spectrogram(audio, sampling_rate)
-    with open('./templates/report.html', 'w') as file:
-        file.write(signal_plot_html_snippet)
-        file.write('\n')
-        file.write(spectrogram_html_snippet)
-        file.close()
-
-
 def get_plotly_signal(audio):
     audio = scipy.signal.decimate(audio, 6)
     x = np.linspace(0, len(audio), len(audio))
@@ -51,7 +41,7 @@ def get_plotly_signal(audio):
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
     plotly_link = plotly.plotly.plot(fig, auto_open=False)
-    return tls.get_embed(plotly_link), plotly_link
+    return tls.get_embed(plotly_link)
 
 
 def get_plotly_spectrogram(audio, sampling_rate):
@@ -72,7 +62,7 @@ def get_plotly_spectrogram(audio, sampling_rate):
     )
     fig = go.Figure(data=trace, layout=layout)
     plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
-    return tls.get_embed(plotly_link), plotly_link
+    return tls.get_embed(plotly_link)
 
 
 def plot_lime_explanation(explanations, instance, num_slices=40):
@@ -83,7 +73,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         mode='lines',
     )
     data = [trace]
-    layout = {'title': 'Explanation of classifier decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
+    layout = {'title': 'Samples that influenced classifiers decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
               'yaxis': {'title': 'Magnitude', 'showgrid': False}, 'shapes': []}
     shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
              'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
@@ -98,7 +88,8 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         shape1 = shape.copy()
         shape1.update({'x0': start, 'x1': end, 'opacity': weight})
         layout['shapes'].append(shape1)
-    lime_plot_link = plotly.plotly.plot({'data': data, 'layout': layout}, filename='timestamp-highlight')
+    fig = go.Figure(data=data, layout=layout)
+    lime_plot_link = plotly.plotly.plot(fig, auto_open=False)
     return tls.get_embed(lime_plot_link)
 
 

@@ -72,7 +72,6 @@ class LimeTimeSeriesExplanation(object):
             self.class_names = [str(x) for x in range(yss[0].shape[0])]
         explanation_ = explanation.Explanation(domain_mapper=domain_mapper, class_names=self.class_names)
         explanation_.predict_proba = yss[0]
-        print("Explaining")
         explanations = []
         for label in labels:
             explanations.append(self.base.explain_instance_with_data(data, yss, distances, label, num_features,
