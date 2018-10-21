@@ -99,7 +99,7 @@ def _load_model():
     GRAPH = tf.get_default_graph()
 
 
-def get_lime_explanation(instance, num_features=20, num_slices=30, num_samples=100):
+def get_lime_explanation(instance, num_features=20, num_slices=40, num_samples=250):
     explainer = LimeTimeSeriesExplanation(feature_selection='auto', verbose=False)
     explanations = explainer.explain_instance(timeseries=instance, num_features=num_features, training_set=TRAINING_SET,
                                               num_samples=num_samples, num_slices=num_slices,
@@ -132,6 +132,7 @@ if __name__ == '__main__':
     _load_model()
     global TRAINING_SET
     TRAINING_SET = np.load('train.npy')
+    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 5000), :]
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=5002)

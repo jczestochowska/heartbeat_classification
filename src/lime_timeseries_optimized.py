@@ -118,27 +118,26 @@ class LimeTimeSeriesExplanation(object):
 
         # split time_series into slices
         values_per_slice = math.ceil(len(time_series) / num_slices)
-
         # compute randomly how many slices will be switched off
         sample = np.random.randint(1, num_slices, num_samples)
-        data = np.ones((num_samples + 1, num_slices))
+        # sparse matrix as interpretable features, each slice represents a feature
+        sparse_matrix = np.ones((num_samples, num_slices))
         features_range = range(num_slices)
         petrubed_data = [time_series.copy()]
-
-
-        for i, size in enumerate(sample, start=1):
-            if i % 100 == 0:
-                print("Now processing {} feature from timeseries".format(i))
-            inactive = np.random.choice(features_range, size, replace=False)
-            # set inactive slice to mean of training_set
-            data[i, inactive] = 0
+        inactive_features_in_dense_data = [np.random.choice(features_range, size, replace=False) for size in sample]
+        for i in range(len(inactive_features_in_dense_data)):
+            sparse_matrix[i, inactive_features_in_dense_data[i]] = 0
+        means_for_inactive_features = [
+            [np.mean(training_set[:, index:(index + values_per_slice)]) for index in inactive] for inactive in
+            inactive_features_in_dense_data]
+        for i, inactive in enumerate(inactive_features_in_dense_data):
             petrubed_sample = time_series.copy()
-            for i, inact in enumerate(inactive, start=1):
-                index = inact * values_per_slice
-                # use mean as inactive
-                petrubed_sample[index:(index + values_per_slice)] = np.mean(
-                    training_set[:, index:(index + values_per_slice)])
+            for j, index in enumerate(inactive):
+                petrubed_sample[index * values_per_slice:(index * values_per_slice) + values_per_slice] = \
+                means_for_inactive_features[i][j]
             petrubed_data.append(petrubed_sample)
         labels = classifier_fn(petrubed_data)
-        distances = distance_fn(data)
-        return data, labels, distances
+        # add original point to sparse matrix
+        sparse_matrix = np.insert(sparse_matrix, 0, np.ones((1, num_slices)), axis=0)
+        distances = distance_fn(sparse_matrix)
+        return sparse_matrix, labels, distances

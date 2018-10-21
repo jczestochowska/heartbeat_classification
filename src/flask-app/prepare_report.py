@@ -60,7 +60,8 @@ def get_plotly_spectrogram(audio, sampling_rate):
 
 
 def plot_lime_explanation(explanations, instance, num_slices=40):
-    exp = explanations[0][1]
+    exp = explanations.as_list(label=0)
+
     trace = go.Scatter(
         x=np.arange(0, 10000, 1),
         y=instance,
@@ -72,7 +73,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
     shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
              'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
     values_per_slice = math.ceil(len(instance) / num_slices)
-    weights = [abs(sample[1]) for sample in exp]
+    weights = [abs(sample[1]) * 10 ** 10 for sample in exp]
     normalized_weights = [(weight - min(weights)) / (max(weights) - min(weights)) for weight in weights]
     for i in range(len(exp)):
         feature, _ = exp[i]
