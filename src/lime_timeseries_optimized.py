@@ -72,11 +72,11 @@ class LimeTimeSeriesExplanation(object):
             self.class_names = [str(x) for x in range(yss[0].shape[0])]
         explanation_ = explanation.Explanation(domain_mapper=domain_mapper, class_names=self.class_names)
         explanation_.predict_proba = yss[0]
-        explanations = []
         for label in labels:
-            explanations.append(self.base.explain_instance_with_data(data, yss, distances, label, num_features,
-                                                                     feature_selection=self.feature_selection))
-        return explanations
+            explanation_.local_exp[label] = \
+                self.base.explain_instance_with_data(data, yss, distances, label, num_features,
+                                                     feature_selection=self.feature_selection)[1]
+        return explanation_
 
     @classmethod
     def __data_labels_distances(cls,
@@ -120,10 +120,11 @@ class LimeTimeSeriesExplanation(object):
         values_per_slice = math.ceil(len(time_series) / num_slices)
 
         # compute randomly how many slices will be switched off
-        sample = np.random.randint(1, num_slices + 1, num_samples - 1)
-        data = np.ones((num_samples, num_slices))
+        sample = np.random.randint(1, num_slices, num_samples)
+        data = np.ones((num_samples + 1, num_slices))
         features_range = range(num_slices)
-        inverse_data = [time_series.copy()]
+        petrubed_data = [time_series.copy()]
+
 
         for i, size in enumerate(sample, start=1):
             if i % 100 == 0:
@@ -131,13 +132,13 @@ class LimeTimeSeriesExplanation(object):
             inactive = np.random.choice(features_range, size, replace=False)
             # set inactive slice to mean of training_set
             data[i, inactive] = 0
-            tmp_series = time_series.copy()
+            petrubed_sample = time_series.copy()
             for i, inact in enumerate(inactive, start=1):
                 index = inact * values_per_slice
                 # use mean as inactive
-                tmp_series[index:(index + values_per_slice)] = np.mean(
+                petrubed_sample[index:(index + values_per_slice)] = np.mean(
                     training_set[:, index:(index + values_per_slice)])
-            inverse_data.append(tmp_series)
-        labels = classifier_fn(inverse_data)
+            petrubed_data.append(petrubed_sample)
+        labels = classifier_fn(petrubed_data)
         distances = distance_fn(data)
         return data, labels, distances
