@@ -130,11 +130,14 @@ class LimeTimeSeriesExplanation(object):
         means_for_inactive_features = [
             [np.mean(training_set[:, index:(index + values_per_slice)]) for index in inactive] for inactive in
             inactive_features_in_dense_data]
+        std_for_inactive_features = [
+            [np.std(training_set[:, index:(index + values_per_slice)]) for index in inactive] for inactive in
+            inactive_features_in_dense_data]
         for i, inactive in enumerate(inactive_features_in_dense_data):
             petrubed_sample = time_series.copy()
             for j, index in enumerate(inactive):
                 petrubed_sample[index * values_per_slice:(index * values_per_slice) + values_per_slice] = \
-                means_for_inactive_features[i][j]
+                np.random.normal(0,1) * std_for_inactive_features[i][j] + means_for_inactive_features[i][j]
             petrubed_data.append(petrubed_sample)
         labels = classifier_fn(petrubed_data)
         # add original point to sparse matrix
