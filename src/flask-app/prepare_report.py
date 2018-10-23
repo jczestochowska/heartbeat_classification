@@ -73,11 +73,13 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
     shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
              'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
     values_per_slice = math.ceil(len(instance) / num_slices)
-    weights = [abs(sample[1]) * 10 ** 10 for sample in exp]
+    weights = [abs(sample[1]) * 10 ** 20 for sample in exp]
     normalized_weights = [(weight - min(weights)) / (max(weights) - min(weights)) for weight in weights]
     for i in range(len(exp)):
         feature, _ = exp[i]
         weight = normalized_weights[i]
+        if weight == 0:
+            weight = normalized_weights[-2]
         start = feature * values_per_slice
         end = start + values_per_slice
         shape1 = shape.copy()
