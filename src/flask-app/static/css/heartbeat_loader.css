@@ -1,16 +1,11 @@
-html {
-    height: 100%;
-    background-color: rgba(240, 130, 130, 0.61);
-    z-index: -10;
+#loading-message{
+  height: 140%;
+  width: 100%;
+  display: flex;
+  position: fixed;
+  align-items: center;
+  justify-content: center;
 }
-
-body {
-    margin: 0;
-    height: 100%;
-    background-color: rgba(240, 130, 130, 0.61);
-    z-index: -10;
-}
-
 .heartbeatloader {
     position: absolute;
     width: 20vmin;
@@ -34,7 +29,7 @@ body {
 }
 
 .path {
-    stroke: rgba(3, 3, 3, 0.95);
+    stroke: rgba(188,158,158, 0.95);
     stroke-width: 4;
     stroke-dasharray: 1000px;
     stroke-dashoffset: 1000px;
@@ -53,7 +48,7 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: rgba(209, 28, 28, 0.705);
+    background-color: rgb(96, 12, 12);
     position: absolute;
     z-index: 1;
     margin: auto;
@@ -84,7 +79,7 @@ body {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    background-color: rgba(230, 92, 92, 0.774);
+    background-color: rgba(96, 12, 12, 0.8);
     box-shadow: 0 0 40px 20px #fff;
     position: absolute;
     z-index: -1;

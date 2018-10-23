@@ -96,7 +96,7 @@ def _load_model():
     GRAPH = tf.get_default_graph()
 
 
-def get_lime_explanation(instance, num_features=20, num_slices=40, num_samples=250):
+def get_lime_explanation(instance, num_features=10, num_slices=40, num_samples=250):
     explainer = LimeTimeSeriesExplanation(feature_selection='auto', verbose=False)
     explanations = explainer.explain_instance(timeseries=instance, num_features=num_features, training_set=TRAINING_SET,
                                               num_samples=num_samples, num_slices=num_slices,
