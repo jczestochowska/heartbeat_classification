@@ -72,15 +72,12 @@ def predict():
     lime_thread = ThreadPool(processes=25)
 
     lime_pool_result = lime_thread.map_async(get_lime_explanation, chunks_for_lime)
-    signal_pool_result = signal_thread.apply_async(get_plotly_signal, args=([AUDIO]))
-    spectrogram_pool_result = spectrogram_thread.apply_async(get_plotly_spectrogram, args=(AUDIO, SAMPLING_RATE))
+    signal_thread.apply_async(get_plotly_signal, args=([AUDIO]))
+    spectrogram_thread.apply_async(get_plotly_spectrogram, args=(AUDIO, SAMPLING_RATE))
 
     prediction, probability = get_prediction(chunks, MODEL, GRAPH)
-
     lime_htmls = lime_pool_result.get()
-    signal_html = signal_pool_result.get()
-    spectrogram_html = spectrogram_pool_result.get()
-    save_htmls_to_file(lime_htmls, signal_html, spectrogram_html)
+    save_htmls_to_file(lime_htmls)
     end = time.time()
     print(end - start)
 
@@ -117,14 +114,11 @@ def lime_predict(instances):
     return np.array(labels).reshape(len(instances), 2)
 
 
-def save_htmls_to_file(lime_htmls, signal_html, spectrogram_html):
-    with open('./templates/report.html', 'w') as file:
+def save_htmls_to_file(lime_htmls):
+    with open('./templates/lime.html', 'w') as file:
         for html in lime_htmls:
             file.write(html)
             file.write('\n')
-        file.write(signal_html)
-        file.write('\n')
-        file.write(spectrogram_html)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,9 @@
 import math
 
 import numpy as np
-import plotly
 import scipy
 from plotly import graph_objs as go
-from plotly import tools as tls
+from plotly.offline import plot
 from scipy import signal
 
 from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
@@ -34,8 +33,7 @@ def get_plotly_signal(audio):
     )
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
-    plotly_link = plotly.plotly.plot(fig, auto_open=False)
-    return tls.get_embed(plotly_link)
+    return plot(fig, auto_open=False, output_type='div')
 
 
 def get_plotly_spectrogram(audio, sampling_rate):
@@ -55,8 +53,7 @@ def get_plotly_spectrogram(audio, sampling_rate):
         xaxis=dict(title='Time'),
     )
     fig = go.Figure(data=trace, layout=layout)
-    plotly_link = plotly.plotly.plot(fig, filename='Spectrogram', auto_open=False)
-    return tls.get_embed(plotly_link)
+    return plot(fig, auto_open=False, output_type='div')
 
 
 def plot_lime_explanation(explanations, instance, num_slices=40):
@@ -86,8 +83,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         shape1.update({'x0': start, 'x1': end, 'opacity': weight})
         layout['shapes'].append(shape1)
     fig = go.Figure(data=data, layout=layout)
-    lime_plot_link = plotly.plotly.plot(fig, auto_open=False)
-    return tls.get_embed(lime_plot_link)
+    return plot(fig, auto_open=False, output_type='div')
 
 
 def get_prediction(chunks, model, graph):
