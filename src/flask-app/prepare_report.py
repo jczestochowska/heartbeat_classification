@@ -33,7 +33,7 @@ def get_plotly_signal(audio):
     )
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
-    return plot(fig, auto_open=False, output_type='div')
+    return plot(fig, auto_open=False, filename='templates/signal.html')
 
 
 def get_plotly_spectrogram(audio, sampling_rate):
@@ -53,7 +53,7 @@ def get_plotly_spectrogram(audio, sampling_rate):
         xaxis=dict(title='Time'),
     )
     fig = go.Figure(data=trace, layout=layout)
-    return plot(fig, auto_open=False, output_type='div')
+    return plot(fig, auto_open=False, filename='templates/spectrogram.html')
 
 
 def plot_lime_explanation(explanations, instance, num_slices=40):
