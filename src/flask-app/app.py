@@ -84,6 +84,9 @@ def predict():
     @after_this_request
     def delete_file(response):
         os.remove(filepath)
+        os.remove('./templates/signal.html')
+        os.remove('./templates/spectrogram.html')
+        os.remove('./templates/lime.html')
         return response
 
     return render_template('prediction.html', prediction=prediction, probability=probability)
