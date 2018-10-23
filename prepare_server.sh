@@ -1,5 +1,8 @@
 #!/bin/bash
 
+export LC_ALL="en_US.UTF-8"
+export LC_CTYPE="en_US.UTF-8"
+
 apt-get update -y
 apt-get install -y python-pip
 pip install virtualenv
