@@ -65,7 +65,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         mode='lines',
     )
     data = [trace]
-    layout = {'title': 'Samples that influenced classifiers decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
+    layout = {'title': 'Samples that influenced classifier\'s decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
               'yaxis': {'title': 'Magnitude', 'showgrid': False}, 'shapes': []}
     shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
              'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
