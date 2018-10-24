@@ -118,8 +118,10 @@ def lime_predict(instances):
 
 
 def save_htmls_to_file(lime_htmls):
+    chunks_number = len(lime_htmls)
     with open('./templates/lime.html', 'w') as file:
-        for html in lime_htmls:
+        for index, html in enumerate(lime_htmls, start=1):
+            file.write('{}/{}'.format(index, chunks_number))
             file.write(html)
             file.write('\n')
 

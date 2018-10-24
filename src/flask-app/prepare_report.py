@@ -76,7 +76,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         feature, _ = exp[i]
         weight = normalized_weights[i]
         if weight < 0.1:
-            weight = 0.06
+            weight = 0.07
         start = feature * values_per_slice
         end = start + values_per_slice
         shape1 = shape.copy()
