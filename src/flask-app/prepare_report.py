@@ -23,7 +23,7 @@ def preprocess_uploaded_file(audio, sampling_rate, audio_length):
     return chunks.reshape(chunks.shape[0], chunks.shape[1], 1)
 
 
-def get_plotly_signal(audio):
+def get_plotly_signal(audio, plots_uuid):
     audio = scipy.signal.decimate(audio, 6)
     x = np.linspace(0, len(audio), len(audio))
     layout = go.Layout(
@@ -33,10 +33,10 @@ def get_plotly_signal(audio):
     )
     data = [go.Scattergl(x=x, y=audio)]
     fig = go.Figure(data=data, layout=layout)
-    return plot(fig, auto_open=False, filename='templates/signal.html')
+    return plot(fig, auto_open=False, filename='templates/signal' + plots_uuid + '.html')
 
 
-def get_plotly_spectrogram(audio, sampling_rate):
+def get_plotly_spectrogram(audio, sampling_rate, plots_uuid):
     audio = scipy.signal.decimate(audio, 2)
     audio = np.array(audio)
     freqs, bins, Pxx = signal.spectrogram(audio, fs=sampling_rate)
@@ -53,7 +53,7 @@ def get_plotly_spectrogram(audio, sampling_rate):
         xaxis=dict(title='Time'),
     )
     fig = go.Figure(data=trace, layout=layout)
-    return plot(fig, auto_open=False, filename='templates/spectrogram.html')
+    return plot(fig, auto_open=False, filename='templates/spectrogram' + plots_uuid + '.html')
 
 
 def plot_lime_explanation(explanations, instance, num_slices=40):
@@ -65,7 +65,8 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         mode='lines',
     )
     data = [trace]
-    layout = {'title': 'Samples that influenced classifier\'s decision', 'xaxis': {'title': 'Sample', 'showgrid': False},
+    layout = {'title': 'Samples that influenced classifier\'s decision',
+              'xaxis': {'title': 'Sample', 'showgrid': False},
               'yaxis': {'title': 'Magnitude', 'showgrid': False}, 'shapes': []}
     shape = {'type': 'rect', 'xref': 'x', 'yref': 'paper', 'x0': 0, 'y0': 0, 'x1': 0, 'y1': 1, 'fillcolor': '#f24d50',
              'opacity': 0.0, 'line': {'width': 0}, 'layer': 'below'}
@@ -76,7 +77,7 @@ def plot_lime_explanation(explanations, instance, num_slices=40):
         feature, _ = exp[i]
         weight = normalized_weights[i]
         if weight < 0.1:
-            weight = 0.07
+            weight = 0.1
         start = feature * values_per_slice
         end = start + values_per_slice
         shape1 = shape.copy()

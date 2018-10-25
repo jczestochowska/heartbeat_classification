@@ -1,4 +1,5 @@
 import time
+import uuid
 
 import numpy as np
 import os
@@ -46,6 +47,7 @@ def index():
         file.save(os.path.join(UPLOAD_FOLDER, file.filename))
         filepath = os.path.join(UPLOAD_FOLDER, file.filename)
         session['filepath'] = filepath
+        session['plots_uuid'] = uuid.uuid4().hex
         global AUDIO
         global SAMPLING_RATE
         SAMPLING_RATE, AUDIO = wavfile.read(filepath)
@@ -63,33 +65,36 @@ def index():
 def predict():
     start = time.time()
     filepath = session.get('filepath')
+    plots_uuid = session.get('plots_uuid')
     chunks = preprocess_uploaded_file(AUDIO, SAMPLING_RATE, AUDIO_LENGTH)
     chunks_for_lime = chunks
     if chunks.shape[0] > 1:
         chunks_for_lime = np.squeeze(chunks)
+    elif chunks.shape[0] == 1:
+        chunks_for_lime = np.squeeze(chunks, axis=2)
     signal_thread = ThreadPool(processes=1)
     spectrogram_thread = ThreadPool(processes=1)
     lime_thread = ThreadPool(processes=25)
 
     lime_pool_result = lime_thread.map_async(get_lime_explanation, chunks_for_lime)
-    signal_thread.apply_async(get_plotly_signal, args=([AUDIO]))
-    spectrogram_thread.apply_async(get_plotly_spectrogram, args=(AUDIO, SAMPLING_RATE))
+    signal_thread.apply_async(get_plotly_signal, args=(AUDIO, plots_uuid))
+    spectrogram_thread.apply_async(get_plotly_spectrogram, args=(AUDIO, SAMPLING_RATE, plots_uuid))
 
     prediction, probability = get_prediction(chunks, MODEL, GRAPH)
     lime_htmls = lime_pool_result.get()
-    save_htmls_to_file(lime_htmls)
+    save_htmls_to_file(lime_htmls, plots_uuid)
     end = time.time()
     print(end - start)
 
     @after_this_request
     def delete_file(response):
         os.remove(filepath)
-        os.remove('./templates/signal.html')
-        os.remove('./templates/spectrogram.html')
-        os.remove('./templates/lime.html')
+        os.remove('./templates/signal' + plots_uuid + '.html')
+        os.remove('./templates/spectrogram' + plots_uuid + '.html')
+        os.remove('./templates/lime' + plots_uuid + '.html')
         return response
 
-    return render_template('prediction.html', prediction=prediction, probability=probability)
+    return render_template('prediction.html', prediction=prediction, probability=probability, plots_uuid=plots_uuid)
 
 
 def _load_model():
@@ -117,9 +122,10 @@ def lime_predict(instances):
     return np.array(labels).reshape(len(instances), 2)
 
 
-def save_htmls_to_file(lime_htmls):
+def save_htmls_to_file(lime_htmls, plots_uuid):
+    print("Saving lime to lime html")
     chunks_number = len(lime_htmls)
-    with open('./templates/lime.html', 'w') as file:
+    with open('./templates/lime' + plots_uuid + '.html', 'w') as file:
         for index, html in enumerate(lime_htmls, start=1):
             file.write('{}/{}'.format(index, chunks_number))
             file.write(html)
@@ -131,7 +137,7 @@ if __name__ == '__main__':
     _load_model()
     global TRAINING_SET
     TRAINING_SET = np.load('train.npy')
-    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 5000), :]
+    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 10), :]
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=5002)

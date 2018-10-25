@@ -29,7 +29,7 @@
 }
 
 .path {
-    stroke: rgba(188,158,158, 0.95);
+    stroke: rgba(247, 237, 237, 0.95);
     stroke-width: 4;
     stroke-dasharray: 1000px;
     stroke-dashoffset: 1000px;

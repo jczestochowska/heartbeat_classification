@@ -48,13 +48,13 @@
             <header class="special container">
                 <span class="icon fa-heartbeat"></span>
                 <div>
-                    {% include 'lime.html' %}
+                    {% include 'lime' + plots_uuid + '.html' %}
                 </div>
                 <div>
-                    {% include 'signal.html' %}
+                    {% include 'signal'+ plots_uuid + '.html' %}
                 </div>
                 <div>
-                    {% include 'spectrogram.html' %}
+                    {% include 'spectrogram' + plots_uuid + '.html' %}
                 </div>
             </header>
         </article>
