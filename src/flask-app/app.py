@@ -123,7 +123,6 @@ def lime_predict(instances):
 
 
 def save_htmls_to_file(lime_htmls, plots_uuid):
-    print("Saving lime to lime html")
     chunks_number = len(lime_htmls)
     with open('./templates/lime' + plots_uuid + '.html', 'w') as file:
         for index, html in enumerate(lime_htmls, start=1):
@@ -137,7 +136,7 @@ if __name__ == '__main__':
     _load_model()
     global TRAINING_SET
     TRAINING_SET = np.load('train.npy')
-    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 10), :]
+    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 10000), :]
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=5002)
