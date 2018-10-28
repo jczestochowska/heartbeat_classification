@@ -1,3 +1,4 @@
+import keras_metrics
 import numpy as np
 from keras import callbacks
 from keras.callbacks import ModelCheckpoint
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     convo_input_shape = train_features.shape[1:]
     model = get_keras_cnn(convo_input_shape)
     model.compile(optimizer=Adam(learning_rate), loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=['accuracy', keras_metrics.precision(), keras_metrics.recall()])
     weight_saver = ModelCheckpoint('convo_weights.h5', monitor='val_loss',
                                    save_best_only=True, save_weights_only=False)
 
@@ -76,7 +77,7 @@ if __name__ == '__main__':
                                         embeddings_metadata=None, embeddings_data=None, update_freq='epoch')
 
     hist = model.fit_generator(batch_generator(train_features, train_labels, batch_size),
-                               epochs=50, steps_per_epoch=1000,
+                               epochs=100, steps_per_epoch=1000,
                                validation_data=(test_features, test_labels),
                                callbacks=[weight_saver, tensorboard],
-                               verbose=2)
+                               verbose=2, class_weight={0: 2, 1: 0.5})
