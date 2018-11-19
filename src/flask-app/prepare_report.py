@@ -9,10 +9,6 @@ from scipy import signal
 from src.subsampling_normalization import get_chunks, downsample_chunks, chunks_magnitude_normalization
 
 
-def map_prediction_to_string(label):
-    return "abnormal" if label == 1 else "normal"
-
-
 def preprocess_uploaded_file(audio, sampling_rate, audio_length):
     chunk_length = 5
     new_sampling_rate = 2000
@@ -95,3 +91,7 @@ def get_prediction(chunks, model, graph):
     prediction = 1 if prediction >= 0.5 else 0
     prediction = map_prediction_to_string(prediction)
     return prediction, probability
+
+
+def map_prediction_to_string(label):
+    return "abnormal" if label == 1 else "normal"
