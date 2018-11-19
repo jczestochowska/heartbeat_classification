@@ -1,5 +1,7 @@
+import os
 import tensorflow as tf
 
+from config import PROJECT_ROOT_DIR
 from models.dataset_utils import load_dataset, get_balanced_dataset, delete_tensorboard_summaries, SUMMARIES_DIR
 
 
@@ -61,7 +63,19 @@ def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0
         test_summary = sess.run(merged, feed_dict={features: test_features, labels: test_labels})
         test_writer.add_summary(test_summary, epoch)
 
+    path = os.path.join(PROJECT_ROOT_DIR, "models", "logistic_regression_weights")
+    inputs_dict = {
+        "features": features,
+        "labels": labels
+    }
+    outputs_dict = {
+        "logits": logits
+    }
+    tf.saved_model.simple_save(
+        sess, path, inputs_dict, outputs_dict
+    )
+
 
 if __name__ == '__main__':
     delete_tensorboard_summaries()
-    logistic_regression_training(num_epochs=5000, batch_size=50, training_step=0.2)
+    logistic_regression_training(num_epochs=1000, batch_size=50, training_step=0.2)
