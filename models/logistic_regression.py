@@ -1,8 +1,10 @@
+import itertools
 import os
+
 import tensorflow as tf
 
 from config import PROJECT_ROOT_DIR
-from models.dataset_utils import load_dataset, get_balanced_dataset, delete_tensorboard_summaries, SUMMARIES_DIR
+from models.dataset_utils import load_dataset, get_balanced_dataset, SUMMARIES_DIR
 
 
 def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0.1):
@@ -49,13 +51,16 @@ def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0
     tf.summary.scalar('recall', recall_update)
 
     merged = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(SUMMARIES_DIR + '/train',
+    train_writer = tf.summary.FileWriter(os.path.join(SUMMARIES_DIR, 'logistic_regression',
+                                                      'train_epochs{}_bs{}_lr{}'.format(epochs, batch_size,
+                                                                                        training_step)),
                                          sess.graph)
-    test_writer = tf.summary.FileWriter(SUMMARIES_DIR + '/test')
+    test_writer = tf.summary.FileWriter(os.path.join(SUMMARIES_DIR, 'logistic_regression',
+                                                     'test_epochs{}_bs{}_lr{}'.format(epochs, batch_size, training_step)))
 
     sess.run(tf.local_variables_initializer())
 
-    for epoch in range(num_epochs):
+    for epoch in range(epochs):
         _, loss_value = sess.run([optimizer, cross_entropy])
         if epoch % 10 == 0:
             train_summary = sess.run(merged)
@@ -77,5 +82,10 @@ def logistic_regression_training(num_epochs=1000, batch_size=20, training_step=0
 
 
 if __name__ == '__main__':
-    delete_tensorboard_summaries()
-    logistic_regression_training(num_epochs=1000, batch_size=50, training_step=0.2)
+    epochs = [1000, 2000, 3000]
+    batches = [20, 50, 100]
+    training_steps = [0.1, 0.2, 0.01, 0.001]
+    hyperparameters = [epochs, batches, training_steps]
+    hyperparameters = list(itertools.product(*hyperparameters))
+    for hyperparameters_set in hyperparameters:
+        logistic_regression_training(hyperparameters_set)
