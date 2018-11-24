@@ -1,9 +1,9 @@
 import time
-import uuid
 
 import numpy as np
 import os
 import tensorflow as tf
+import uuid
 from flask import Flask, request, render_template, url_for, after_this_request, flash, session
 from keras.engine.saving import load_model
 from multiprocessing.pool import ThreadPool
@@ -136,7 +136,6 @@ if __name__ == '__main__':
     _load_model()
     global TRAINING_SET
     TRAINING_SET = np.load('train.npy')
-    TRAINING_SET = TRAINING_SET[np.random.randint(0, TRAINING_SET.shape[0], 10000), :]
     app.secret_key = 'super secret key'
     app.config['SESSION_TYPE'] = 'filesystem'
     app.run(debug=True, port=5002)
