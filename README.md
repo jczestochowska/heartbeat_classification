@@ -13,6 +13,9 @@ simple web app that uses deep learning model to predict whether yout heartbeat i
 ### unix machine
 to run app from command line on unix machine (if you use bash/zsh shell, it wouldn't work on e.g fish):
 
+**PLEASE NOTICE**: 
+repo stores almost ~1GB file containing training dataset, it was uploaded using git lfs, cloning may take some time
+
 ```
 git clone https://github.com/jczestochowska/heartbeat_classification.git
 *create virtual environment using requirements.txt file*
