@@ -18,6 +18,7 @@ git clone https://github.com/jczestochowska/heartbeat_classification.git
 *create virtual environment using requirements.txt file*
 cd ./heartbeat_classification
 export PYTHONPATH=$(pwd)
+cd ./heartbeat_classification/src/flask-app
 python3 app.py
 ```
 now you have running instance on localhost,
