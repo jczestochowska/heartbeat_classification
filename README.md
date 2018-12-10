@@ -10,7 +10,7 @@ simple web app that uses deep learning model to predict whether yout heartbeat i
 
 ## getting started
 
-###unix machine
+### unix machine
 to run app from command line on unix machine (if you use bash/zsh shell, it wouldn't work on e.g fish):
 
 ```
