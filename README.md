@@ -1,6 +1,6 @@
 # heartbeat_classification
 
-simple web app that uses deep learning model to predict whether yout heartbeat is normal or abnormal from .wav records
+simple web app that uses deep learning model to predict whether yout heartbeat is normal or abnormal from .wav records. This application was a subject of my bachelor thesis.
 
 ## prerequisities
 
