@@ -4,7 +4,7 @@ keras-metrics==0.0.3
 librosa==0.6.2
 lime==0.1.1.32
 matplotlib==2.2.2
-numpy==1.14.4
+numpy==1.22.0
 pandas==0.23.2
 plotly==3.3.0
 scikit_learn==0.19.2
